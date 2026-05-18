@@ -1,7 +1,7 @@
 {
-  "name": "note-lite",
-  "productName": "YesnoteLite",
-  "version": "0.2.0",
+  "name": "snowote",
+  "productName": "snowote",
+  "version": "1.0.0",
   "main": "dist/electron/main/index.js",
   "description": "A lightweight local-first note app with Git sync, Markdown editor, and version history",
   "author": "wavesnow",

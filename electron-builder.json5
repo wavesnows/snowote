@@ -1,8 +1,6 @@
-/**
- * @see https://www.electron.build/configuration/configuration
- */
 {
-  "appId": "YourAppID",
+  "appId": "com.wavesnow.notelite",
+  "productName": "notelite",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -11,22 +9,18 @@
     "dist"
   ],
   "mac": {
-    "icon": "src/assets/electron.png", 
+    "icon": "build/icon.icns",
     "artifactName": "${productName}_${version}.${ext}",
-    "target": [
-      "dmg"
-    ]
+    "target": ["dmg"]
   },
   "win": {
+    "artifactName": "${productName}_${version}.${ext}",
     "target": [
       {
         "target": "nsis",
-        "arch": [
-          "x64"
-        ]
+        "arch": ["x64"]
       }
-    ],
-    "artifactName": "${productName}_${version}.${ext}"
+    ]
   },
   "nsis": {
     "oneClick": false,

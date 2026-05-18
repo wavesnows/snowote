@@ -215,169 +215,56 @@
             </el-form>
           </el-tab-pane>
 
-          <!-- Tab 4: 定时任务 -->
-          <el-tab-pane :label="t('scheduler.title')">
-            <div style="-webkit-app-region: no-drag">
+          <!-- 文章改编配置 -->
+          <el-tab-pane :label="t('articleRewrite.title')">
+            <div style="-webkit-app-region: no-drag; padding: 8px 0;">
+              <el-form label-position="top" size="small">
 
-              <!-- 视图切换头部 -->
-              <div class="scheduler-view-header">
-                <span class="scheduler-view-title">
-                  {{ schedulerSubTab === 'list' ? t('scheduler.taskList') : (editingTaskId ? t('scheduler.editTask') : t('scheduler.newTask')) }}
-                </span>
-                <el-button v-if="schedulerSubTab === 'list'" size="small" @click="newTask">+ {{ t('scheduler.newTask') }}</el-button>
-                <el-button v-else size="small" @click="cancelEdit">← {{ t('scheduler.taskList') }}</el-button>
-              </div>
+                <el-divider content-position="left" style="margin: 4px 0 20px;">{{ t('articleRewrite.scriptConfig') }}</el-divider>
 
-              <!-- 任务列表视图 -->
-              <template v-if="schedulerSubTab === 'list'">
-                <div v-if="!schedulerTasks.length" class="scheduler-tab-empty">
-                  {{ t('scheduler.empty') }}
-                </div>
-                <div v-else class="scheduler-task-list">
-                  <div
-                    v-for="item in schedulerTasks"
-                    :key="item.id"
-                    class="scheduler-task-item"
-                    :class="{ 'is-editing': editingTaskId === item.id }"
-                    @click="editTask(item)"
+                <el-form-item :label="t('articleRewrite.configMonitorPy')">
+                  <div style="display:flex;align-items:center;gap:6px;width:100%">
+                    <div class="path-display" style="flex:1">{{ articleRewriteConfig.monitorPy }}</div>
+                    <el-button size="small" @click="selectMonitorPy">{{ t('settings.browse') }}</el-button>
+                  </div>
+                </el-form-item>
+
+                <el-form-item :label="t('articleRewrite.configAitmpDir')">
+                  <div style="display:flex;align-items:center;gap:6px;width:100%">
+                    <div class="path-display" style="flex:1">{{ articleRewriteConfig.aitmpDir }}</div>
+                    <el-button size="small" @click="selectAitmpDir">{{ t('settings.browse') }}</el-button>
+                  </div>
+                </el-form-item>
+
+                <el-form-item :label="t('articleRewrite.configPython')">
+                  <el-input
+                    v-model="articleRewriteConfig.python"
+                    :placeholder="t('articleRewrite.configPythonPlaceholder')"
+                    @change="saveArticleRewriteConfig"
+                  />
+                </el-form-item>
+
+              </el-form>
+
+                <!-- 微信账号配置 -->
+                <el-divider content-position="left" style="margin: 28px 0 20px;">{{ t('articleRewrite.wechatAccounts') }}</el-divider>
+                <el-form label-position="top" size="small">
+                  <el-form-item
+                    v-for="acc in wechatAccountList.filter(a => a.key !== 'toutiao')"
+                    :key="acc.key"
+                    :label="acc.label"
                   >
-                    <div class="s-info">
-                      <div class="s-name-row">
-                        <span class="s-name">{{ item.name }}</span>
-                        <span class="s-badge" :class="item.systemJobId ? 's-badge-system' : 's-badge-app'">
-                          {{ item.type === 'shell' ? (item.systemJobId ? t('scheduler.badgeSystem') : t('scheduler.badgeApp')) : t('scheduler.badgeApp') }}
-                        </span>
-                      </div>
-                      <div class="s-meta-row">
-                        <span class="s-dot" :class="dotClass(item)"></span>
-                        <span class="s-status" :class="'s-status-' + (item.lastStatus || 'none')">
-                          {{ runningTaskIds.has(item.id) ? '⏳ ' + t('scheduler.statusRunning') : statusLabel(item) }}
-                        </span>
-                        <span v-if="item.lastRun" class="s-time">{{ relativeTime(item.lastRun) }}</span>
-                      </div>
-                    </div>
-                    <div class="s-actions" @click.stop>
-                      <el-switch
-                        :model-value="item.enabled"
-                        size="small"
-                        style="-webkit-app-region:no-drag"
-                        @change="(v: boolean) => toggleEnabled(item, v)"
-                      />
-                      <button
-                        class="s-btn"
-                        :disabled="runningTaskIds.has(item.id)"
-                        @click="runTaskNow(item)"
-                        :title="t('scheduler.runNow')"
-                      >{{ runningTaskIds.has(item.id) ? '⏳' : '▶' }}</button>
-                      <button class="s-btn s-btn-danger" @click="removeTask(item)" :title="t('scheduler.delete')">✕</button>
-                    </div>
-                  </div>
-                </div>
-              </template>
-
-              <!-- 新建/编辑表单视图 -->
-              <template v-else>
-                <el-form :model="taskForm" label-width="120px" label-position="top" style="margin-top:8px">
-                  <el-form-item :label="t('scheduler.taskName')">
-                    <el-input v-model="taskForm.name" :placeholder="t('scheduler.taskNamePlaceholder')" />
-                  </el-form-item>
-                  <el-form-item :label="t('scheduler.schedule')">
-                    <el-select v-model="taskForm.schedule.mode" style="width:120px">
-                      <el-option value="simple" :label="t('scheduler.simple')" />
-                      <el-option value="cron" :label="t('scheduler.cron')" />
-                    </el-select>
-                  </el-form-item>
-                  <template v-if="taskForm.schedule.mode === 'simple'">
-                    <el-form-item :label="t('scheduler.frequency')">
-                      <el-select v-model="taskForm.schedule.frequency" style="width:110px">
-                        <el-option value="daily" :label="t('scheduler.daily')" />
-                        <el-option value="weekly" :label="t('scheduler.weekly')" />
-                        <el-option value="monthly" :label="t('scheduler.monthly')" />
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item :label="t('scheduler.time')">
-                      <el-input v-model="taskFormTime" placeholder="09:00" style="width:100px" @blur="validateTime" />
-                      <div v-if="timeError" style="color:#f56c6c;font-size:12px;margin-top:2px">{{ timeError }}</div>
-                    </el-form-item>
-                    <el-form-item v-if="taskForm.schedule.frequency === 'weekly'" :label="t('scheduler.weekday')">
-                      <el-select v-model="taskForm.schedule.weekday" style="width:110px">
-                        <el-option v-for="(d,i) in weekdays" :key="i" :value="i" :label="d" />
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item v-if="taskForm.schedule.frequency === 'monthly'" :label="t('scheduler.dayOfMonth')">
+                    <div style="display:flex;align-items:center;gap:6px;width:100%">
                       <el-input
-                        v-model.number="taskForm.schedule.day"
-                        type="number"
-                        style="width:80px"
-                        @change="v => taskForm.schedule.day = Math.min(31, Math.max(1, Number(v) || 1))"
+                        v-model="acc.alias"
+                        :placeholder="acc.defaultConfigured ? t('articleRewrite.wechatDefaultMode') : t('articleRewrite.wechatAliasPlaceholder')"
+                        @change="saveWechatAccounts"
+                        style="flex:1"
                       />
-                    </el-form-item>
-                  </template>
-                  <template v-else>
-                    <el-form-item :label="t('scheduler.cronExpression')">
-                      <el-input v-model="taskForm.schedule.cron" placeholder="0 9 * * *" @blur="validateTaskCron" />
-                      <div v-if="cronError" style="color:#f56c6c;font-size:12px;margin-top:2px">{{ t('scheduler.cronInvalid') }}</div>
-                    </el-form-item>
-                  </template>
-                  <div v-if="taskForm.type === 'shell' && isWindows" class="s-windows-note">
-                    {{ t('scheduler.windowsFallback') }}
-                  </div>
-                  <el-form-item :label="t('scheduler.taskType')">
-                    <el-select v-model="taskForm.type" style="width:140px">
-                      <el-option value="shell" :label="t('scheduler.shell')" />
-                      <el-option value="builtin" :label="t('scheduler.builtin')" />
-                    </el-select>
-                  </el-form-item>
-                  <template v-if="taskForm.type === 'shell'">
-                    <el-form-item :label="t('scheduler.command')">
-                      <el-input v-model="taskForm.command" :placeholder="t('scheduler.commandPlaceholder')" />
-                    </el-form-item>
-                    <el-form-item :label="t('scheduler.workdir')">
-                      <el-input v-model="taskForm.workdir" :placeholder="t('scheduler.workdirPlaceholder')" @blur="validateWorkdir" />
-                      <div v-if="workdirError" style="color:#f56c6c;font-size:12px;margin-top:2px">{{ workdirError }}</div>
-                    </el-form-item>
-                  </template>
-                  <template v-else>
-                    <el-form-item :label="t('scheduler.action')">
-                      <el-select v-model="taskForm.action" style="width:160px">
-                        <el-option value="git-pull" :label="t('scheduler.gitPull')" />
-                        <el-option value="git-push" :label="t('scheduler.gitPush')" />
-                        <el-option value="refresh-tree" :label="t('scheduler.refreshTree')" />
-                      </el-select>
-                    </el-form-item>
-                  </template>
-                  <el-form-item :label="t('scheduler.maxAttempts')">
-                    <el-input
-                      v-model.number="taskForm.retry.maxAttempts"
-                      type="number"
-                      style="width:80px"
-                      :min="1"
-                      :max="10"
-                      @change="v => taskForm.retry.maxAttempts = Math.min(10, Math.max(1, Number(v) || 1))"
-                    />
-                  </el-form-item>
-                  <el-form-item :label="t('scheduler.delaySeconds')">
-                    <el-input
-                      v-model.number="taskForm.retry.delaySeconds"
-                      type="number"
-                      style="width:100px"
-                      :min="10"
-                      :max="3600"
-                      @change="v => taskForm.retry.delaySeconds = Math.min(3600, Math.max(10, Number(v) || 60))"
-                    />
-                  </el-form-item>
-                  <el-form-item :label="t('scheduler.enabled')">
-                    <div style="display:flex;align-items:center;gap:10px;-webkit-app-region:no-drag">
-                      <el-switch v-model="taskForm.enabled" />
+                      <span :style="{ width:'8px', height:'8px', borderRadius:'50%', flexShrink:0, display:'inline-block', background: (acc.alias || acc.defaultConfigured) ? '#67c23a' : '#dcdfe6' }"></span>
                     </div>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button type="primary" :disabled="!canSaveTask" @click="saveTask">{{ t('common.save') }}</el-button>
-                    <el-button @click="cancelEdit">{{ t('common.cancel') }}</el-button>
                   </el-form-item>
                 </el-form>
-              </template>
-
             </div>
           </el-tab-pane>
 
@@ -432,7 +319,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed } from 'vue'
   import { Refresh, Setting, Plus, Download, Upload, Suitcase } from '@element-plus/icons-vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { useTtsStore, Tree } from "@/store/store";
@@ -445,8 +332,6 @@
   import { ipcRenderer } from 'electron';
   import { useI18n } from 'vue-i18n';
   import { isFileInGitRepo } from '@/libs/gitHistory';
-  import { SchedulerTask, simpleToCron } from '@/types/scheduler';
-  import { v4 as uuidv4 } from 'uuid';
 
   const { t, locale } = useI18n();
   const formLabelWidth = '140px';
@@ -483,6 +368,77 @@
 
   const refreshing = ref(false);
   const newNotebookName = ref('');
+
+  // ── 文章改编配置 ──────────────────────────────────────────
+  const os = require('os')
+  const DEFAULT_ARTICLE_REWRITE_CONFIG = {
+    monitorPy: `${os.homedir()}/gitnotes/article/monitor/monitor.py`,
+    aitmpDir: `${os.homedir()}/gitnotes/article/aitmp`,
+    python: `${os.homedir()}/miniconda3/bin/python3`,
+  }
+
+  const ElStore = require('electron-store')
+  const elStore = new ElStore()
+
+  const articleRewriteConfig = ref({
+    monitorPy: (elStore.get('articleRewrite.monitorPy') as string) || DEFAULT_ARTICLE_REWRITE_CONFIG.monitorPy,
+    aitmpDir: (elStore.get('articleRewrite.aitmpDir') as string) || DEFAULT_ARTICLE_REWRITE_CONFIG.aitmpDir,
+    python: (elStore.get('articleRewrite.python') as string) || DEFAULT_ARTICLE_REWRITE_CONFIG.python,
+  })
+
+  // 微信账号配置（alias 对应 baoyu-post-to-wechat EXTEND.md 里的 account alias，空=未配置）
+  // defaultConfigured: 即使 alias 为空也算已配置（单账号模式）
+  const wechatAccountList = ref([
+    { key: 'once',   label: '从前的事', alias: (elStore.get('articleRewrite.wechat.once') as string) ?? '',    defaultConfigured: true  },
+    { key: 'snow',   label: '飘雪思考', alias: (elStore.get('articleRewrite.wechat.snow') as string) || '',    defaultConfigured: false },
+    { key: 'system', label: '思维体系', alias: (elStore.get('articleRewrite.wechat.system') as string) || '', defaultConfigured: false },
+  ])
+
+  function saveWechatAccounts() {
+    wechatAccountList.value.forEach(acc => {
+      elStore.set(`articleRewrite.wechat.${acc.key}`, acc.alias)
+    })
+    // 同时写入 ~/.notelite/wechat-accounts.json 供 monitor.py 读取
+    try {
+      const fs = require('fs')
+      const configDir = `${os.homedir()}/.notelite`
+      fs.mkdirSync(configDir, { recursive: true })
+      const data: Record<string, string> = {}
+      wechatAccountList.value.forEach(acc => {
+        if (acc.alias) data[acc.key] = acc.alias
+      })
+      fs.writeFileSync(`${configDir}/wechat-accounts.json`, JSON.stringify(data, null, 2))
+    } catch (e) { console.error('写入 wechat-accounts.json 失败', e) }
+    ElMessage({ message: t('settings.saved'), type: 'success' })
+  }
+
+  function saveArticleRewriteConfig() {
+    elStore.set('articleRewrite.monitorPy', articleRewriteConfig.value.monitorPy)
+    elStore.set('articleRewrite.aitmpDir', articleRewriteConfig.value.aitmpDir)
+    elStore.set('articleRewrite.python', articleRewriteConfig.value.python)
+    ElMessage({ message: t('settings.saved'), type: 'success' })
+  }
+
+  async function selectMonitorPy() {
+    const result = await ipcRenderer.invoke('dialog:openFile', {
+      filters: [{ name: 'Python', extensions: ['py'] }],
+      defaultPath: articleRewriteConfig.value.monitorPy,
+    })
+    if (result) {
+      articleRewriteConfig.value.monitorPy = result
+      saveArticleRewriteConfig()
+    }
+  }
+
+  async function selectAitmpDir() {
+    const result = await ipcRenderer.invoke('dialog:openDirectory', {
+      defaultPath: articleRewriteConfig.value.aitmpDir,
+    })
+    if (result) {
+      articleRewriteConfig.value.aitmpDir = result
+      saveArticleRewriteConfig()
+    }
+  }
 
   function createNotebook() {
     const name = newNotebookName.value.trim();
@@ -716,210 +672,6 @@
     }
   }
 
-  // ── Scheduler ────────────────────────────────────────────────────────────────
-
-  const schedulerTasks = ref<SchedulerTask[]>([])
-  const editingTaskId = ref<string | null>(null)
-  const schedulerSubTab = ref('list')
-  const runningTaskIds = ref(new Set<string>())
-  const cronError = ref(false)
-  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  const isWindows = process.platform === 'win32'
-
-  function defaultTaskForm(): SchedulerTask {
-    return {
-      id: '',
-      name: '',
-      enabled: true,
-      schedule: { mode: 'simple', frequency: 'daily', time: '09:00' },
-      type: 'shell',
-      command: '',
-      workdir: '',
-      action: 'git-pull',
-      retry: { maxAttempts: 3, delaySeconds: 60 },
-    }
-  }
-
-  const taskForm = ref<SchedulerTask>(defaultTaskForm())
-
-  const taskFormTime = computed({
-    get: () => taskForm.value.schedule.time || '09:00',
-    set: (v: string) => { taskForm.value.schedule.time = v },
-  })
-
-  async function loadSchedulerTasks() {
-    schedulerTasks.value = await ipcRenderer.invoke('scheduler:list')
-  }
-
-  function resetFormErrors() {
-    cronError.value = false
-    timeError.value = ''
-    workdirError.value = ''
-  }
-
-  function newTask() {
-    editingTaskId.value = null
-    taskForm.value = defaultTaskForm()
-    resetFormErrors()
-    schedulerSubTab.value = 'form'
-  }
-
-  function editTask(item: SchedulerTask) {
-    editingTaskId.value = item.id
-    taskForm.value = { ...item, schedule: { ...item.schedule } }
-    resetFormErrors()
-    schedulerSubTab.value = 'form'
-  }
-
-  function cancelEdit() {
-    editingTaskId.value = null
-    taskForm.value = defaultTaskForm()
-    resetFormErrors()
-    schedulerSubTab.value = 'list'
-  }
-
-  function isValidCron(expr: string): boolean {
-    const parts = expr.trim().split(/\s+/)
-    if (parts.length !== 5) return false
-    const ranges = [[0,59],[0,23],[1,31],[1,12],[0,7]]
-    return parts.every((part, i) => {
-      if (part === '*') return true
-      if (/^\*\/\d+$/.test(part)) return true
-      const [min, max] = ranges[i]
-      return part.split(',').every(seg => {
-        const r = seg.split('-')
-        return r.every(n => { const num = parseInt(n,10); return !isNaN(num) && num >= min && num <= max })
-      })
-    })
-  }
-
-  const timeError = ref('')
-  const workdirError = ref('')
-
-  function validateTaskCron() {
-    if (taskForm.value.schedule.mode !== 'cron') return
-    cronError.value = !isValidCron(taskForm.value.schedule.cron || '')
-  }
-
-  function validateTime() {
-    const val = taskFormTime.value.trim()
-    if (!val) { timeError.value = t('scheduler.timeRequired'); return }
-    const match = val.match(/^(\d{1,2}):(\d{2})$/)
-    if (!match) { timeError.value = t('scheduler.timeInvalid'); return }
-    const h = parseInt(match[1]), m = parseInt(match[2])
-    if (h > 23 || m > 59) { timeError.value = t('scheduler.timeInvalid'); return }
-    timeError.value = ''
-  }
-
-  function validateWorkdir() {
-    const val = taskForm.value.workdir?.trim()
-    if (!val) { workdirError.value = ''; return }
-    workdirError.value = require('fs').existsSync(val) ? '' : t('scheduler.workdirNotFound')
-  }
-
-  const canSaveTask = computed(() => {
-    if (!taskForm.value.name.trim()) return false
-    if (taskForm.value.schedule.mode === 'simple') {
-      const val = taskFormTime.value.trim()
-      const match = val.match(/^(\d{1,2}):(\d{2})$/)
-      if (!match) return false
-      if (parseInt(match[1]) > 23 || parseInt(match[2]) > 59) return false
-    }
-    if (taskForm.value.schedule.mode === 'cron' && !isValidCron(taskForm.value.schedule.cron || '')) return false
-    if (taskForm.value.type === 'shell' && !taskForm.value.command?.trim()) return false
-    if (taskForm.value.workdir?.trim() && !require('fs').existsSync(taskForm.value.workdir.trim())) return false
-    return true
-  })
-
-  async function saveTask() {
-    // JSON round-trip strips Vue reactive proxies so IPC structured clone works
-    const toSave: SchedulerTask = JSON.parse(JSON.stringify(taskForm.value))
-    if (!toSave.id) toSave.id = uuidv4()
-    if (toSave.schedule.mode === 'simple') toSave.schedule.cron = simpleToCron(toSave)
-    await ipcRenderer.invoke('scheduler:save', toSave)
-    await loadSchedulerTasks()
-    editingTaskId.value = null
-    taskForm.value = defaultTaskForm()
-    cronError.value = false
-    schedulerSubTab.value = 'list'
-    ElMessage({ message: t('common.save') + ' ✓', type: 'success' })
-  }
-
-  async function runTaskNow(item: SchedulerTask) {
-    const next = new Set(runningTaskIds.value)
-    next.add(item.id)
-    runningTaskIds.value = next
-    try {
-      await ipcRenderer.invoke('scheduler:run-now', { id: item.id })
-      await loadSchedulerTasks()
-    } finally {
-      const after = new Set(runningTaskIds.value)
-      after.delete(item.id)
-      runningTaskIds.value = after
-    }
-  }
-
-  function relativeTime(ts: number): string {
-    const diff = Date.now() - ts
-    if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
-    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago'
-    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago'
-    return new Date(ts).toLocaleDateString()
-  }
-
-  async function removeTask(item: SchedulerTask) {
-    try {
-      await ElMessageBox.confirm(
-        t('scheduler.confirmDelete', { name: item.name }),
-        t('common.delete'),
-        { confirmButtonText: t('common.ok'), cancelButtonText: t('common.cancel'), type: 'warning' }
-      )
-    } catch { return }
-    await ipcRenderer.invoke('scheduler:delete', { id: item.id })
-    ipcRenderer.send('scheduler:tasks-changed')
-    await loadSchedulerTasks()
-    if (editingTaskId.value === item.id) cancelEdit()
-  }
-
-  function dotClass(item: SchedulerTask) {
-    if (!item.enabled) return 'dot-grey'
-    if (item.lastStatus === 'running') return 'dot-yellow'
-    if (item.lastStatus === 'error') return 'dot-red'
-    if (item.lastStatus === 'success') return 'dot-green'
-    return 'dot-blue'
-  }
-
-  function dotLabel(item: SchedulerTask) {
-    if (!item.enabled) return t('scheduler.statusDisabled')
-    if (item.lastStatus === 'running') return t('scheduler.statusRunning')
-    if (item.lastStatus === 'error') return t('scheduler.statusError')
-    if (item.lastStatus === 'success') return t('scheduler.statusSuccess')
-    return t('scheduler.never')
-  }
-
-  function statusLabel(item: SchedulerTask) {
-    if (!item.enabled) return t('scheduler.statusDisabled')
-    if (!item.lastRun) return t('scheduler.never')
-    if (item.lastStatus === 'running') return t('scheduler.statusRunning')
-    if (item.lastStatus === 'error') return t('scheduler.statusError')
-    if (item.lastStatus === 'success') return t('scheduler.statusSuccess')
-    return ''
-  }
-
-  async function toggleEnabled(item: SchedulerTask, enabled: boolean) {
-    const toSave: SchedulerTask = JSON.parse(JSON.stringify(item))
-    toSave.enabled = enabled
-    await ipcRenderer.invoke('scheduler:save', toSave)
-    await loadSchedulerTasks()
-  }
-
-  // Load tasks when drawer opens
-  watch(() => config.value.drawer, (open) => {
-    if (open) loadSchedulerTasks()
-  })
-
-  // ── End Scheduler ─────────────────────────────────────────────────────────────
-
   async function saveHander(value: any) {
     ttsStore.settings.currentbook = value;
     if (value.rootDir && value.rootDir !== ttsStore.notestore.currentStore) {
@@ -1057,6 +809,7 @@
 }
 
 :deep(.el-form-item__label) {
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -1072,86 +825,4 @@
   margin-bottom: 12px;
 }
 
-/* Scheduler tab */
-.scheduler-tab { display: flex; flex-direction: column; gap: 12px; }
-.scheduler-tab-empty { font-size: 12px; color: #909399; padding: 8px 0; }
-.scheduler-task-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
-.scheduler-task-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  border: 1px solid transparent;
-}
-.scheduler-task-item:hover { background: #f5f7fa; }
-.scheduler-task-item.is-editing { background: #ecf5ff; border-color: #b3d8ff; }
-.s-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dot-grey { background: #909399; }
-.dot-green { background: #67c23a; }
-.dot-red { background: #f56c6c; }
-.dot-yellow { background: #e6a23c; }
-.dot-blue { background: #409eff; }
-.s-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.s-name-row { display: flex; align-items: center; }
-.s-meta-row { display: flex; align-items: center; gap: 6px; }
-.s-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #303133; font-size: 13px; }
-.s-time { font-size: 11px; color: #c0c4cc; margin-left: auto; }
-.s-badge {
-  font-size: 10px;
-  padding: 1px 5px;
-  border-radius: 3px;
-  flex-shrink: 0;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  line-height: 1.4;
-}
-.s-badge-system, .s-badge-app { background: #f0f0f0; color: #909399; }
-.s-windows-note {
-  font-size: 12px;
-  color: #e6a23c;
-  padding: 6px 0;
-  margin-bottom: 4px;
-}
-.s-status { font-size: 11px; white-space: nowrap; flex-shrink: 0; }
-.s-status-success { color: #67c23a; }
-.s-status-error { color: #f56c6c; }
-.s-status-running { color: #e6a23c; }
-.s-status-skipped { color: #909399; }
-.s-status-none { color: #909399; }
-.s-actions { display: flex; gap: 2px; }
-.s-btn {
-  width: 20px; height: 20px; border: none; background: transparent;
-  cursor: pointer; font-size: 11px; color: #909399; border-radius: 3px;
-  display: flex; align-items: center; justify-content: center; padding: 0;
-}
-.s-btn:hover { background: rgba(0,0,0,0.06); color: #409eff; }
-.s-btn-danger:hover { color: #f56c6c; }
-.scheduler-view-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 0 10px 0;
-  border-bottom: 1px solid #ebeef5;
-  margin-bottom: 12px;
-}
-.scheduler-view-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #303133;
-}
-.scheduler-form-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 13px;
-  font-weight: 600;
-  color: #303133;
-  padding: 6px 0 4px;
-  border-top: 1px solid #ebeef5;
-}
-.scheduler-form { margin-top: 4px; }
 </style>

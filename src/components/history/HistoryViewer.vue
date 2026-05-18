@@ -153,7 +153,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue';
-const { ipcRenderer } = require('electron');
 import { useI18n } from 'vue-i18n';
 import { useTtsStore } from '@/store/store';
 import { storeToRefs } from 'pinia';
@@ -168,6 +167,7 @@ import Quote from '@editorjs/quote';
 import Code from '@editorjs/code';
 import Table from '@editorjs/table';
 import Checklist from '@editorjs/checklist';
+const { ipcRenderer } = require('electron');
 
 const { t } = useI18n();
 const ttsStore = useTtsStore();

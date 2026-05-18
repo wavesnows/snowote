@@ -30,18 +30,18 @@ async function runCommandInRenderer(command:any) {
   //runCommand("ls")
 
   export async function runCommand(command:any) {
-    var res:Object ={}
+    const res: { code: number; result: string } = { code: 0, result: '' }
     try {
     // 在渲染进程中执行命令并返回结果
     const { stdout, stderr } = await execPromise(command);
     console.log(stdout, stderr);
-    res['code'] = 0;
-    res['result'] = stdout
+    res.code = 0;
+    res.result = stdout
 
   } catch (error:any) {
     console.error(error);
-    res['code'] = 1;
-    res['result'] = error.message
+    res.code = 1;
+    res.result = error.message
   }
   return res
 }

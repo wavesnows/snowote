@@ -215,59 +215,6 @@
             </el-form>
           </el-tab-pane>
 
-          <!-- 文章改编配置 -->
-          <el-tab-pane :label="t('articleRewrite.title')">
-            <div style="-webkit-app-region: no-drag; padding: 8px 0;">
-              <el-form label-position="top" size="small">
-
-                <el-divider content-position="left" style="margin: 4px 0 20px;">{{ t('articleRewrite.scriptConfig') }}</el-divider>
-
-                <el-form-item :label="t('articleRewrite.configMonitorPy')">
-                  <div style="display:flex;align-items:center;gap:6px;width:100%">
-                    <div class="path-display" style="flex:1">{{ articleRewriteConfig.monitorPy }}</div>
-                    <el-button size="small" @click="selectMonitorPy">{{ t('settings.browse') }}</el-button>
-                  </div>
-                </el-form-item>
-
-                <el-form-item :label="t('articleRewrite.configAitmpDir')">
-                  <div style="display:flex;align-items:center;gap:6px;width:100%">
-                    <div class="path-display" style="flex:1">{{ articleRewriteConfig.aitmpDir }}</div>
-                    <el-button size="small" @click="selectAitmpDir">{{ t('settings.browse') }}</el-button>
-                  </div>
-                </el-form-item>
-
-                <el-form-item :label="t('articleRewrite.configPython')">
-                  <el-input
-                    v-model="articleRewriteConfig.python"
-                    :placeholder="t('articleRewrite.configPythonPlaceholder')"
-                    @change="saveArticleRewriteConfig"
-                  />
-                </el-form-item>
-
-              </el-form>
-
-                <!-- 微信账号配置 -->
-                <el-divider content-position="left" style="margin: 28px 0 20px;">{{ t('articleRewrite.wechatAccounts') }}</el-divider>
-                <el-form label-position="top" size="small">
-                  <el-form-item
-                    v-for="acc in wechatAccountList.filter(a => a.key !== 'toutiao')"
-                    :key="acc.key"
-                    :label="acc.label"
-                  >
-                    <div style="display:flex;align-items:center;gap:6px;width:100%">
-                      <el-input
-                        v-model="acc.alias"
-                        :placeholder="acc.defaultConfigured ? t('articleRewrite.wechatDefaultMode') : t('articleRewrite.wechatAliasPlaceholder')"
-                        @change="saveWechatAccounts"
-                        style="flex:1"
-                      />
-                      <span :style="{ width:'8px', height:'8px', borderRadius:'50%', flexShrink:0, display:'inline-block', background: (acc.alias || acc.defaultConfigured) ? '#67c23a' : '#dcdfe6' }"></span>
-                    </div>
-                  </el-form-item>
-                </el-form>
-            </div>
-          </el-tab-pane>
-
         </el-tabs>
       </template>
     </el-drawer>
@@ -368,77 +315,6 @@
 
   const refreshing = ref(false);
   const newNotebookName = ref('');
-
-  // ── 文章改编配置 ──────────────────────────────────────────
-  const os = require('os')
-  const DEFAULT_ARTICLE_REWRITE_CONFIG = {
-    monitorPy: `${os.homedir()}/gitnotes/article/monitor/monitor.py`,
-    aitmpDir: `${os.homedir()}/gitnotes/article/aitmp`,
-    python: `${os.homedir()}/miniconda3/bin/python3`,
-  }
-
-  const ElStore = require('electron-store')
-  const elStore = new ElStore()
-
-  const articleRewriteConfig = ref({
-    monitorPy: (elStore.get('articleRewrite.monitorPy') as string) || DEFAULT_ARTICLE_REWRITE_CONFIG.monitorPy,
-    aitmpDir: (elStore.get('articleRewrite.aitmpDir') as string) || DEFAULT_ARTICLE_REWRITE_CONFIG.aitmpDir,
-    python: (elStore.get('articleRewrite.python') as string) || DEFAULT_ARTICLE_REWRITE_CONFIG.python,
-  })
-
-  // 微信账号配置（alias 对应 baoyu-post-to-wechat EXTEND.md 里的 account alias，空=未配置）
-  // defaultConfigured: 即使 alias 为空也算已配置（单账号模式）
-  const wechatAccountList = ref([
-    { key: 'once',   label: '从前的事', alias: (elStore.get('articleRewrite.wechat.once') as string) ?? '',    defaultConfigured: true  },
-    { key: 'snow',   label: '飘雪思考', alias: (elStore.get('articleRewrite.wechat.snow') as string) || '',    defaultConfigured: false },
-    { key: 'system', label: '思维体系', alias: (elStore.get('articleRewrite.wechat.system') as string) || '', defaultConfigured: false },
-  ])
-
-  function saveWechatAccounts() {
-    wechatAccountList.value.forEach(acc => {
-      elStore.set(`articleRewrite.wechat.${acc.key}`, acc.alias)
-    })
-    // 同时写入 ~/.notelite/wechat-accounts.json 供 monitor.py 读取
-    try {
-      const fs = require('fs')
-      const configDir = `${os.homedir()}/.notelite`
-      fs.mkdirSync(configDir, { recursive: true })
-      const data: Record<string, string> = {}
-      wechatAccountList.value.forEach(acc => {
-        if (acc.alias) data[acc.key] = acc.alias
-      })
-      fs.writeFileSync(`${configDir}/wechat-accounts.json`, JSON.stringify(data, null, 2))
-    } catch (e) { console.error('写入 wechat-accounts.json 失败', e) }
-    ElMessage({ message: t('settings.saved'), type: 'success' })
-  }
-
-  function saveArticleRewriteConfig() {
-    elStore.set('articleRewrite.monitorPy', articleRewriteConfig.value.monitorPy)
-    elStore.set('articleRewrite.aitmpDir', articleRewriteConfig.value.aitmpDir)
-    elStore.set('articleRewrite.python', articleRewriteConfig.value.python)
-    ElMessage({ message: t('settings.saved'), type: 'success' })
-  }
-
-  async function selectMonitorPy() {
-    const result = await ipcRenderer.invoke('dialog:openFile', {
-      filters: [{ name: 'Python', extensions: ['py'] }],
-      defaultPath: articleRewriteConfig.value.monitorPy,
-    })
-    if (result) {
-      articleRewriteConfig.value.monitorPy = result
-      saveArticleRewriteConfig()
-    }
-  }
-
-  async function selectAitmpDir() {
-    const result = await ipcRenderer.invoke('dialog:openDirectory', {
-      defaultPath: articleRewriteConfig.value.aitmpDir,
-    })
-    if (result) {
-      articleRewriteConfig.value.aitmpDir = result
-      saveArticleRewriteConfig()
-    }
-  }
 
   function createNotebook() {
     const name = newNotebookName.value.trim();

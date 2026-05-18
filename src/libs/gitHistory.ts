@@ -47,7 +47,7 @@ export async function getFileHistory(
     const lines = result.trim().split('\n');
     console.log('Parsed', lines.length, 'lines from git log');
 
-    const allCommits: CommitInfo[] = lines.map(line => {
+    const allCommits: CommitInfo[] = lines.map((line: string) => {
       const [hash, date, author_name, author_email, ...messageParts] = line.split('|');
       return {
         hash,

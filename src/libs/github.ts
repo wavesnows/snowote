@@ -73,6 +73,7 @@ export async function addRemoteRepo(
   mode: 'multi' | 'direct'
 ): Promise<boolean> {
   const ttsStore = useTtsStore();
+  const prevRepo = ttsStore.config.githubRepoName;
   const pc = getProviderConfig(ttsStore);
 
   if (!pc.username || !pc.token) {

@@ -58,7 +58,7 @@ const starredNotes = computed(() => {
   const currentNotebookPath = ttsStore.notebook.currentPath
   const notes: Array<{path: string, label: string}> = []
 
-  starred.forEach(path => {
+  starred.forEach((path: string) => {
     // 只显示当前笔记本中的星标笔记
     if (path.startsWith(currentNotebookPath) && fs.existsSync(path)) {
       const fileName = path.split('/').pop() || ''

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
-const { ipcRenderer } = require('electron');
 import { useTtsStore } from "@/store/store";
 import Header from "./components/header/Header.vue";
 import Aside from "./components/aside/Aside.vue";
@@ -11,6 +10,7 @@ import HistoryViewer from "./components/history/HistoryViewer.vue";
 import KeyboardShortcuts from "./components/help/KeyboardShortcuts.vue";
 import TaskManager from "./components/TaskManager.vue";
 import TerminalPanel from "./components/terminal/TerminalPanel.vue";
+const { ipcRenderer } = require('electron');
 
 const ttsStore = useTtsStore();
 

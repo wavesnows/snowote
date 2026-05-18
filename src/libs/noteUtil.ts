@@ -18,7 +18,7 @@ export function getNoteLabel(){
 
 export function dateFormat(fmt:string, date:Date) {
     let ret;
-    const opt = {
+    const opt: Record<string, string> = {
         "Y+": date.getFullYear().toString(),        // 年
         "m+": (date.getMonth() + 1).toString(),     // 月
         "d+": date.getDate().toString(),            // 日

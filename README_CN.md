@@ -1,4 +1,4 @@
-# notelite
+# 雪记（snowote）
 
 一款轻量的本地优先笔记应用，基于 Electron + Vue 3 构建。支持 Markdown 和富文本编辑，Git 同步备份，版本历史浏览与恢复。
 

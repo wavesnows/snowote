@@ -1,4 +1,4 @@
-# notelite
+# snowote（雪记）
 
 A lightweight, local-first note-taking app built with Electron and Vue 3. Write in Markdown or rich text, sync with Git, and browse version history — all without leaving your desktop.
 

@@ -1,8 +1,8 @@
 import { app, BrowserWindow, shell, ipcMain, dialog, Notification } from "electron";
 import { release } from "os";
 import { join } from "path";
-import { execSync, execSync as _execSync, spawn, ChildProcess } from "child_process";
-import { readFileSync, readdirSync, appendFileSync, mkdirSync } from "fs";
+import { execSync, execSync as _execSync, spawn } from "child_process";
+import { readFileSync, readdirSync } from "fs";
 
 import logger from "../utils/log";
 import os from 'os';
@@ -339,115 +339,6 @@ ipcMain.on('terminal-resize', (_event, cols: number, rows: number) => {
     ptyProcess.resize(cols, rows);
   }
 });
-
-// 文章改编：后台静默执行 monitor.py，输出通过 IPC 流式传回面板
-let articleRewriteProc: ChildProcess | null = null
-
-ipcMain.on('article-rewrite-run', (_event, command: string) => {
-  // 杀掉上一个还在跑的任务
-  if (articleRewriteProc) {
-    try { articleRewriteProc.kill('SIGTERM') } catch (_) {}
-    articleRewriteProc = null
-  }
-
-  const home = os.homedir()
-  const extraPaths = [
-    `${home}/miniconda3/bin`,
-    `${home}/.bun/bin`,
-    `${home}/.opencode/bin`,
-    `${home}/.nvm/versions/node/v23.11.0/bin`,
-    '/opt/homebrew/bin', '/usr/local/bin', '/usr/bin', '/bin'
-  ].join(':')
-
-  const env = {
-    ...process.env,
-    PATH: `${extraPaths}:${process.env.PATH || ''}`,
-    HOME: os.homedir(),
-  }
-
-  // 日志文件路径
-  const logDir = join(app.getPath('userData'), 'article-rewrite-logs')
-  try { mkdirSync(logDir, { recursive: true }) } catch (_) {}
-  const logFile = join(logDir, `${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.log`)
-  const writeLog = (text: string) => {
-    try { appendFileSync(logFile, text) } catch (_) {}
-  }
-  writeLog(`[${new Date().toLocaleString()}] Command: ${command}\n\n`)
-
-  // 用 shell 执行，支持完整的命令字符串
-  // cwd 设为 monitor.py 所在目录，让 mc 能找到正确的 skill 上下文
-  const monitorMatch = command.match(/["']?(\S+monitor\.py)["']?/)
-  const monitorDir = monitorMatch ? require('path').dirname(monitorMatch[1]) : os.homedir()
-  const proc = spawn('/bin/zsh', ['-c', command], {
-    cwd: monitorDir,
-    env,
-  })
-  articleRewriteProc = proc
-
-  proc.stdout.on('data', (data: Buffer) => {
-    const text = data.toString()
-    writeLog(text)
-    if (win && !win.isDestroyed()) {
-      win.webContents.send('article-rewrite-output', text)
-    }
-  })
-
-  proc.stderr.on('data', (data: Buffer) => {
-    const text = data.toString()
-    writeLog(text)
-    if (win && !win.isDestroyed()) {
-      win.webContents.send('article-rewrite-output', text)
-    }
-  })
-
-  proc.on('close', (code: number | null) => {
-    articleRewriteProc = null
-    const exitCode = code ?? 1
-    writeLog(`\n[exit ${exitCode}]\n`)
-    // 系统通知
-    if (Notification.isSupported()) {
-      new Notification({
-        title: exitCode === 0 ? '✅ 任务完成' : '❌ 任务失败',
-        body: exitCode === 0 ? '文章处理完成，可查看结果' : `任务异常退出（exit ${exitCode}）`,
-        silent: false,
-      }).show()
-    }
-    if (win && !win.isDestroyed()) {
-      win.webContents.send('article-rewrite-done', exitCode)
-    }
-  })
-
-  proc.on('error', (err: Error) => {
-    articleRewriteProc = null
-    writeLog(`\n[error] ${err.message}\n`)
-    if (Notification.isSupported()) {
-      new Notification({ title: '❌ 任务失败', body: err.message }).show()
-    }
-    if (win && !win.isDestroyed()) {
-      win.webContents.send('article-rewrite-output', `Error: ${err.message}\n`)
-      win.webContents.send('article-rewrite-done', 1)
-    }
-  })
-})
-
-// 停止文章改编
-ipcMain.handle('article-rewrite:log-dir', () => {
-  return join(app.getPath('userData'), 'article-rewrite-logs')
-})
-
-ipcMain.handle('article-rewrite:is-running', () => {
-  return articleRewriteProc !== null
-})
-
-ipcMain.on('article-rewrite-stop', () => {
-  if (articleRewriteProc) {
-    try { articleRewriteProc.kill('SIGTERM') } catch (_) {}
-    articleRewriteProc = null
-    if (win && !win.isDestroyed()) {
-      win.webContents.send('article-rewrite-done', -1)
-    }
-  }
-})
 
 // Git diff IPC handler
 ipcMain.handle('git:diff', async (_event, { repoPath, hashA, hashB, filePath }: {

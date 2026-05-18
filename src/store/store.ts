@@ -120,6 +120,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
       //  store.set("defaultStorePath",this.notestore.currentStore);
         defaultNotePath: store.get("defaultNotePath") || defaultNotebookPath,
         drawer:false,
+        taskManagerVisible: false,
         githubEnable:false,
         githubRepoName:store.get("GithubRepoName") || "",
         githubUsername:store.get("GithubUsername") || "",
@@ -507,6 +508,10 @@ export const useTtsStore = defineStore(DFConf.appName, {
               blocks: [],
               version: "2.26.5"
             };
+            this.history.selectedCommit = commit;
+          } else if (filePath.endsWith('.md')) {
+            // md 文件直接存原始内容，不做 JSON 解析
+            this.history.previewData = { _markdown: content, time: Date.now(), blocks: [], version: "2.26.5" };
             this.history.selectedCommit = commit;
           } else {
             const parsed = JSON.parse(content);

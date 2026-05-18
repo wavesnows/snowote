@@ -9,6 +9,7 @@ import HomeMain from "./components/note/HomeMain.vue";
 import Footer from "./components/footer/NoteFooter.vue";
 import HistoryViewer from "./components/history/HistoryViewer.vue";
 import KeyboardShortcuts from "./components/help/KeyboardShortcuts.vue";
+import TaskManager from "./components/TaskManager.vue";
 import TerminalPanel from "./components/terminal/TerminalPanel.vue";
 
 const ttsStore = useTtsStore();
@@ -83,6 +84,7 @@ onUnmounted(() => {
     <TerminalPanel v-show="ttsStore.terminal.show" />
     <HistoryViewer />
     <KeyboardShortcuts />
+    <TaskManager />
   </div>
 </template>
 

@@ -111,18 +111,20 @@ function onBuiltinAction(_event: any, action: string) {
   }
 }
 
+function onRefreshTree() { ttsStore.refreshTreeData() }
+
 onMounted(() => {
   loadAll()
   ipcRenderer.on('task-result', onTaskResult)
   ipcRenderer.on('scheduler:builtin-action', onBuiltinAction)
-  ipcRenderer.on('scheduler:refresh-tree', () => ttsStore.refreshTreeData())
+  ipcRenderer.on('scheduler:refresh-tree', onRefreshTree)
   ipcRenderer.on('scheduler:tasks-changed', loadAll)
 })
 
 onBeforeUnmount(() => {
   ipcRenderer.removeListener('task-result', onTaskResult)
   ipcRenderer.removeListener('scheduler:builtin-action', onBuiltinAction)
-  ipcRenderer.removeAllListeners('scheduler:refresh-tree')
+  ipcRenderer.removeListener('scheduler:refresh-tree', onRefreshTree)
   ipcRenderer.removeListener('scheduler:tasks-changed', loadAll)
 })
 </script>

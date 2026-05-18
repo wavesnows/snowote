@@ -35,10 +35,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ipcRenderer } from 'electron'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import { useTtsStore } from '@/store/store'
 import { SchedulerTask } from '@/types/scheduler'
 
@@ -110,7 +110,14 @@ function onOpen() {
 }
 
 watch(visible, (v) => { if (v) onOpen() })
-ipcRenderer.on('scheduler:tasks-changed', loadAll)
+
+onMounted(() => {
+  ipcRenderer.on('scheduler:tasks-changed', loadAll)
+})
+
+onBeforeUnmount(() => {
+  ipcRenderer.removeListener('scheduler:tasks-changed', loadAll)
+})
 </script>
 
 <style scoped>

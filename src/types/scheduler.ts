@@ -10,9 +10,7 @@ export interface SchedulerTask {
     day?: number        // 1–31
     cron?: string       // stored cron expression (always present after save)
   }
-  type: 'shell' | 'builtin'
-  command?: string
-  workdir?: string
+  type: 'builtin'
   action?: 'git-pull' | 'git-push' | 'refresh-tree'
   retry: {
     maxAttempts: number
@@ -21,7 +19,6 @@ export interface SchedulerTask {
   lastRun?: number
   lastStatus?: 'success' | 'error' | 'running' | 'skipped'
   lastError?: string
-  systemJobId?: string  // set when shell task is installed in OS scheduler
 }
 
 export interface TaskResult {

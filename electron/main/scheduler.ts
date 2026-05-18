@@ -1,11 +1,8 @@
 import { BrowserWindow, Notification, app, ipcMain } from 'electron'
 import * as nodeCron from 'node-cron'
-import { exec } from 'child_process'
 import { join } from 'path'
 import * as fs from 'fs'
 import { SchedulerTask, TaskResult } from '../../src/types/scheduler'
-import { isSystemSchedulerSupported, installJob, uninstallJob } from './system-scheduler'
-import { mergeResultsIntoTasks } from './scheduler-results'
 
 const ElectronStore = require('electron-store')
 const store = new ElectronStore()
@@ -56,15 +53,6 @@ function deleteTaskFromStore(id: string) {
 
 // ── Execution ─────────────────────────────────────────────────────────────────
 
-async function execShell(command: string, workdir: string): Promise<{ output: string; error?: string }> {
-  return new Promise((resolve) => {
-    exec(command, { cwd: workdir, timeout: 120000 }, (err, stdout, stderr) => {
-      if (err) resolve({ output: stdout.trim(), error: stderr.trim() || err.message })
-      else resolve({ output: stdout.trim() })
-    })
-  })
-}
-
 async function execBuiltin(action: string): Promise<{ output: string; error?: string }> {
   if (action === 'refresh-tree') {
     if (mainWin && !mainWin.isDestroyed()) {
@@ -108,17 +96,8 @@ async function runTask(task: SchedulerTask): Promise<void> {
 
   for (let attempt = 1; attempt <= task.retry.maxAttempts; attempt++) {
     try {
-      if (task.type === 'shell') {
-        const workdir = task.workdir || app.getPath('home')
-        result = await execShell(task.command || '', workdir)
-      } else {
-        result = await execBuiltin(task.action || '')
-      }
-
-      if (!result.error) {
-        succeeded = true
-        break
-      }
+      result = await execBuiltin(task.action || '')
+      if (!result.error) { succeeded = true; break }
     } catch (e: any) {
       result = { output: '', error: e.message }
     }
@@ -189,17 +168,17 @@ function unregisterJob(id: string) {
 
 export function initScheduler(window: BrowserWindow) {
   mainWin = window
-  let tasks = mergeResultsIntoTasks(loadTasks())
+  let tasks = loadTasks()
 
   // Insert default task on first run
   if (tasks.length === 0) {
     const defaultTask: SchedulerTask = {
-      id: 'default-refresh-tree',
-      name: 'Daily Refresh Tree',
+      id: 'default-git-pull',
+      name: 'Daily Git Pull',
       enabled: false,
       schedule: { mode: 'simple', frequency: 'daily', time: '09:00', cron: '0 9 * * *' },
       type: 'builtin',
-      action: 'refresh-tree',
+      action: 'git-pull',
       retry: { maxAttempts: 3, delaySeconds: 60 },
     }
     saveTask(defaultTask)
@@ -213,28 +192,13 @@ export function initScheduler(window: BrowserWindow) {
 }
 
 export function schedulerHandleList() {
-  return mergeResultsIntoTasks(loadTasks())
+  return loadTasks()
 }
 
 export async function schedulerHandleSave(task: SchedulerTask): Promise<SchedulerTask> {
-  if (task.type === 'shell' && isSystemSchedulerSupported()) {
-    if (task.systemJobId) await uninstallJob(task)
-    const { success, jobId } = await installJob(task)
-    if (success) {
-      task.systemJobId = jobId
-      writeLog(task.id, 'info', `Installed system job: ${jobId}`)
-    } else {
-      task.systemJobId = undefined
-      writeLog(task.id, 'warn', 'System job install failed, falling back to node-cron')
-      registerJob(task)
-    }
-  } else {
-    if (task.systemJobId) {
-      await uninstallJob(task)
-      task.systemJobId = undefined
-    }
-    registerJob(task)
-  }
+  // 统一用 node-cron 调度
+  unregisterJob(task.id)
+  registerJob(task)
   saveTask(task)
   if (mainWin && !mainWin.isDestroyed()) {
     mainWin.webContents.send('scheduler:tasks-changed')
@@ -243,10 +207,6 @@ export async function schedulerHandleSave(task: SchedulerTask): Promise<Schedule
 }
 
 export async function schedulerHandleDeleteAndNotify(id: string): Promise<void> {
-  const task = loadTasks().find(t => t.id === id)
-  if (task?.systemJobId) {
-    await uninstallJob(task)
-  }
   unregisterJob(id)
   deleteTaskFromStore(id)
   if (mainWin && !mainWin.isDestroyed()) {

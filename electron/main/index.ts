@@ -1,8 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain, dialog, Notification } from "electron";
 import { release } from "os";
 import { join } from "path";
-import { execSync, execSync as _execSync, spawn } from "child_process";
-import { readFileSync, readdirSync } from "fs";
+import { execSync, spawn } from "child_process";
 
 import logger from "../utils/log";
 import os from 'os';
@@ -362,80 +361,3 @@ ipcMain.handle('scheduler:list', () => schedulerHandleList())
 ipcMain.handle('scheduler:save', async (_event, task) => schedulerHandleSave(task))
 ipcMain.handle('scheduler:delete', async (_event, { id }) => schedulerHandleDeleteAndNotify(id))
 ipcMain.handle('scheduler:run-now', (_event, { id }) => schedulerHandleRunNow(id))
-
-// External tasks IPC handlers
-ipcMain.handle('external-tasks:list', async () => {
-  const launchAgentsDir = join(os.homedir(), 'Library', 'LaunchAgents')
-  const result: any[] = []
-  let plistFiles: string[] = []
-  try {
-    plistFiles = readdirSync(launchAgentsDir).filter(f => f.endsWith('.plist'))
-  } catch { return [] }
-
-  // 解析 launchctl list 获取运行状态
-  let launchctlOutput = ''
-  try {
-    launchctlOutput = _execSync('launchctl list', { encoding: 'utf-8', timeout: 5000 })
-  } catch {}
-  const runningMap: Record<string, { pid?: number; lastExitCode?: number }> = {}
-  for (const line of launchctlOutput.split('\n').slice(1)) {
-    const parts = line.trim().split(/\s+/)
-    if (parts.length >= 3) {
-      const label = parts[2]
-      const pid = parts[0] !== '-' ? parseInt(parts[0]) : undefined
-      const exitCode = parts[1] !== '-' ? parseInt(parts[1]) : undefined
-      runningMap[label] = { pid, lastExitCode: exitCode }
-    }
-  }
-
-  for (const file of plistFiles) {
-    const label = file.replace('.plist', '')
-    // 只显示非 com.yesnote.* 的外部任务
-    if (label.startsWith('com.yesnote.')) continue
-    try {
-      const plistPath = join(launchAgentsDir, file)
-      const content = readFileSync(plistPath, 'utf-8')
-      // 简单解析 plist XML
-      const labelMatch = content.match(/<key>Label<\/key>\s*<string>([^<]+)<\/string>/)
-      const intervalMatch = content.match(/<key>StartInterval<\/key>\s*<integer>(\d+)<\/integer>/)
-      const logMatch = content.match(/<key>StandardOutPath<\/key>\s*<string>([^<]+)<\/string>/)
-      const argsMatch = [...content.matchAll(/<string>([^<]+)<\/string>/g)]
-        .map(m => m[1])
-        .filter(s => !s.includes('<') && s.length < 200)
-      const parsedLabel = labelMatch?.[1] || label
-      const interval = intervalMatch ? parseInt(intervalMatch[1]) : undefined
-      const logPath = logMatch?.[1]
-      const command = argsMatch.slice(0, 3).join(' ')
-      const status = runningMap[parsedLabel]
-      result.push({
-        label: parsedLabel,
-        plistPath,
-        command,
-        interval,
-        logPath,
-        isRunning: status?.pid != null,
-        pid: status?.pid,
-        lastExitCode: status?.lastExitCode,
-      })
-    } catch {}
-  }
-  return result
-})
-
-ipcMain.handle('external-tasks:start', async (_event, label: string) => {
-  try {
-    _execSync(`launchctl start ${label}`, { timeout: 5000 })
-    return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
-  }
-})
-
-ipcMain.handle('external-tasks:stop', async (_event, label: string) => {
-  try {
-    _execSync(`launchctl stop ${label}`, { timeout: 5000 })
-    return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
-  }
-})

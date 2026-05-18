@@ -1,5 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+release/
+
+# Electron
+out/
+
+# OS files
 .DS_Store
-dist
-node_modules
-release
-node_modules
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+
+# Superpowers brainstorming
+.superpowers/
+
+# Package artifacts
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.rpm
+*.zip

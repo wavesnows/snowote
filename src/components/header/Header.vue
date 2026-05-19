@@ -44,17 +44,6 @@
           <el-icon><Monitor /></el-icon>
         </el-button>
       </el-tooltip>
-      <el-tooltip :content="ttsStore.showHiddenFiles ? t('tools.hideAllFiles') : t('tools.showAllFiles')" placement="bottom">
-        <el-button
-          size="small"
-          circle
-          class="circle-btn"
-          :style="ttsStore.showHiddenFiles ? 'background-color: #e6a23c;' : ''"
-          @click="toggleShowAllFiles"
-        >
-          <el-icon><Files /></el-icon>
-        </el-button>
-      </el-tooltip>
       <el-tooltip :content="t('help.keyboardShortcuts')" placement="bottom">
         <el-button
           size="small"
@@ -100,7 +89,7 @@ import Breadcrumb from "../note/Breadcrumb.vue"
 import { ref, onMounted, onUnmounted } from "vue";
 import { useTtsStore } from "@/store/store";
 import { ElMessage } from 'element-plus';
-import { Files, QuestionFilled } from '@element-plus/icons-vue';
+import { QuestionFilled } from '@element-plus/icons-vue';
 import { useI18n } from 'vue-i18n';
 
 const { ipcRenderer } = require("electron");
@@ -144,11 +133,6 @@ onUnmounted(() => {
 
 function openGithub() {
   shell.openExternal('https://github.com/wavesnows/snowote');
-}
-
-function toggleShowAllFiles() {
-  ttsStore.showHiddenFiles = !ttsStore.showHiddenFiles;
-  ttsStore.refreshTreeData();
 }
 </script>
 

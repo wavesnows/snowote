@@ -26,6 +26,15 @@ export var editorInstance:EditorJS
 
 const store = defaultStore
 
+// electron-store (conf) rejects undefined values — use delete() to clear
+function safeSet(key: string, value: any) {
+  if (value === undefined) {
+    store.delete(key);
+  } else {
+    store.set(key, value);
+  }
+}
+
 /*
 if(store.get("savePath") == ""){
   const homedir = os.homedir();
@@ -212,9 +221,9 @@ export const useTtsStore = defineStore(DFConf.appName, {
   // 定义actions，类似于methods，用来修改state，做一些业务逻辑
   actions: {
     setLastEditNote(){
-      store.set("lastPath", this.cnote.lastPath);
-      store.set("title", this.cnote.title);
-      store.set('editerData', this.editerData);
+      safeSet("lastPath", this.cnote.lastPath);
+      safeSet("title", this.cnote.title);
+      safeSet('editerData', this.editerData);
       if (this.treeMenu.expandedKeys) {
         store.set('expandedKeys', this.treeMenu.expandedKeys);
       }
@@ -228,7 +237,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
     //  store.set("currentNotebook", this.notebook.current);
       store.set("currentNotebookType",this.notebook.bookType);
       store.set("currentNotebookPath",this.notebook.currentPath);
-      store.set('currentNoteBookObj',this.settings.currentbook)
+      safeSet('currentNoteBookObj', this.settings.currentbook)
     },
     setLocalNotePath() {
       store.set("GithubRepoName", this.config.githubRepoName);
@@ -242,7 +251,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
     updateSettings(){
       store.set("currentStore",this.notestore.currentStore);
       store.set("currentNotebookPath",this.notebook.currentPath)
-      store.set("defaultNotePath",this.settings.defaultNotePath)
+      safeSet("defaultNotePath", this.settings.defaultNotePath)
 
       store.set("GithubRepoName", this.config.githubRepoName?this.config.githubRepoName:"");
       store.set("GithubUsername", this.config.githubUsername?this.config.githubUsername:"");

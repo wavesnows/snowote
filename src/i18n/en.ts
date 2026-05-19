@@ -357,6 +357,14 @@ const en = {
       title: 'Task Manager',
       noTasks: 'No tasks',
     },
+    update: {
+      available: 'New version v{version} available',
+      download: 'Download',
+      later: 'Later',
+      downloading: 'Downloading {percent}%',
+      downloaded: 'Update ready — will install on restart',
+      restart: 'Restart now',
+    },
   };
 
   export default en;

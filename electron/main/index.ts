@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, ipcMain, dialog, Notification } from "electr
 import { release } from "os";
 import { join } from "path";
 import { execSync, spawn } from "child_process";
+import { autoUpdater } from "electron-updater";
 
 import logger from "../utils/log";
 import os from 'os';
@@ -146,6 +147,10 @@ async function createWindow() {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
     win?.webContents.send("git-available", gitAvailable);
     if (win) initScheduler(win);
+    // Check for updates after UI is ready (production only)
+    if (app.isPackaged) {
+      setTimeout(() => autoUpdater.checkForUpdates(), 3000);
+    }
   });
 
   // Make all links open with the browser, not with the application
@@ -357,6 +362,30 @@ ipcMain.handle('git:diff', async (_event, { repoPath, hashA, hashB, filePath }: 
 })
 
 ipcMain.handle('app:version', () => app.getVersion())
+
+// ── Auto Updater ──────────────────────────────────────────────────────────────
+autoUpdater.logger = logger;
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
+
+autoUpdater.on('update-available', (info) => {
+  win?.webContents.send('updater:available', info);
+});
+autoUpdater.on('update-not-available', () => {
+  // silent — no need to notify user
+});
+autoUpdater.on('download-progress', (progress) => {
+  win?.webContents.send('updater:progress', progress);
+});
+autoUpdater.on('update-downloaded', (info) => {
+  win?.webContents.send('updater:downloaded', info);
+});
+autoUpdater.on('error', (err) => {
+  logger.error(`AutoUpdater error: ${err.message}`);
+});
+
+ipcMain.handle('updater:download', () => autoUpdater.downloadUpdate());
+ipcMain.handle('updater:install', () => autoUpdater.quitAndInstall(false, true));
 
 // Scheduler IPC handlers
 ipcMain.handle('scheduler:list', () => schedulerHandleList())

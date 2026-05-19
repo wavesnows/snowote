@@ -357,6 +357,14 @@ const zh = {
       title: '任务管理',
       noTasks: '暂无任务',
     },
+    update: {
+      available: '发现新版本 v{version}',
+      download: '立即下载',
+      later: '稍后',
+      downloading: '正在下载 {percent}%',
+      downloaded: '更新已下载，重启后安装',
+      restart: '立即重启',
+    },
   };
 
   export default zh;

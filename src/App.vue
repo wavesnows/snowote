@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, h } from 'vue';
 import { useTtsStore } from "@/store/store";
 import Header from "./components/header/Header.vue";
 import Aside from "./components/aside/Aside.vue";
@@ -10,9 +10,12 @@ import HistoryViewer from "./components/history/HistoryViewer.vue";
 import KeyboardShortcuts from "./components/help/KeyboardShortcuts.vue";
 import TaskManager from "./components/TaskManager.vue";
 import TerminalPanel from "./components/terminal/TerminalPanel.vue";
-const { ipcRenderer } = require('electron');
+import { ElNotification, ElButton, ElProgress } from 'element-plus';
+import { useI18n } from 'vue-i18n';
 
+const { ipcRenderer } = require('electron');
 const ttsStore = useTtsStore();
+const { t } = useI18n();
 
 // Handle global keyboard shortcuts
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -43,6 +46,60 @@ const handleFocus = () => {
   ttsStore.scheduleTreeRefresh();
 };
 
+// ── Auto-update notifications ──────────────────────────────────────────────
+let progressNotif: any = null;
+
+function onUpdateAvailable(_: any, info: any) {
+  ElNotification({
+    title: t('update.available', { version: info.version }),
+    message: h('div', { style: 'display:flex;gap:8px;margin-top:8px' }, [
+      h(ElButton, {
+        type: 'primary', size: 'small',
+        onClick: async () => {
+          progressNotif = ElNotification({
+            title: t('update.downloading', { percent: 0 }),
+            message: h(ElProgress, { percentage: 0, strokeWidth: 6 }),
+            duration: 0,
+          });
+          await ipcRenderer.invoke('updater:download');
+        }
+      }, () => t('update.download')),
+      h(ElButton, { size: 'small' }, () => t('update.later')),
+    ]),
+    duration: 0,
+    position: 'bottom-right',
+  });
+}
+
+function onUpdateProgress(_: any, progress: any) {
+  const pct = Math.floor(progress.percent);
+  if (progressNotif) {
+    progressNotif.close();
+    progressNotif = ElNotification({
+      title: t('update.downloading', { percent: pct }),
+      message: h(ElProgress, { percentage: pct, strokeWidth: 6 }),
+      duration: 0,
+      position: 'bottom-right',
+    });
+  }
+}
+
+function onUpdateDownloaded() {
+  if (progressNotif) { progressNotif.close(); progressNotif = null; }
+  ElNotification({
+    title: t('update.downloaded'),
+    message: h('div', { style: 'margin-top:8px' },
+      h(ElButton, {
+        type: 'primary', size: 'small',
+        onClick: () => ipcRenderer.invoke('updater:install'),
+      }, () => t('update.restart'))
+    ),
+    duration: 0,
+    position: 'bottom-right',
+    type: 'success',
+  });
+}
+
 onMounted(() => {
   ttsStore.buildFlatFileList();
   window.addEventListener('keydown', handleKeyDown);
@@ -55,14 +112,20 @@ onMounted(() => {
   ipcRenderer.on('git-available', (_: any, available: boolean) => {
     ttsStore.gitAvailable = available;
   });
+
+  ipcRenderer.on('updater:available', onUpdateAvailable);
+  ipcRenderer.on('updater:progress', onUpdateProgress);
+  ipcRenderer.on('updater:downloaded', onUpdateDownloaded);
 });
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('focus', handleFocus);
-  // Save expanded state on exit
   window.dispatchEvent(new CustomEvent('save-tree-expanded-state'));
   ttsStore.setLastEditNote();
+  ipcRenderer.removeListener('updater:available', onUpdateAvailable);
+  ipcRenderer.removeListener('updater:progress', onUpdateProgress);
+  ipcRenderer.removeListener('updater:downloaded', onUpdateDownloaded);
 });
 
 </script>

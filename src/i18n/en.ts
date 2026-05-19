@@ -282,6 +282,13 @@ const en = {
       terminalFeature1: 'Toggle with Ctrl+` or click ⌨ in the footer',
       terminalFeature2: 'Drag the top edge to resize, or use the size presets (▁▄█) in the toolbar',
       terminalFeature3: 'Type exit to close the terminal session — panel closes automatically',
+      about: 'About',
+      aboutVersion: 'Version',
+      aboutDesc: 'A lightweight, local-first note app with Markdown editing, Git sync, and version history.',
+      aboutGithub: 'Star on GitHub ⭐',
+      aboutDonate: 'Buy me a coffee ☕',
+      aboutDonateWechat: 'WeChat Pay',
+      aboutDonateAlipay: 'Alipay',
     },
     welcome: {
       title: 'Welcome to snowote',
@@ -297,6 +304,8 @@ const en = {
       tip1: 'Click a folder in the left sidebar to create a new note',
       tip2: 'Use Cmd+S to save, Cmd+F to search',
       tip3: 'Enable Git sync in settings for backup',
+      footerText: 'Enjoying snowote?',
+      footerStar: 'Star it on GitHub ⭐',
     },
     scheduler: {
       title: 'Scheduler',

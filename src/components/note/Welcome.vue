@@ -45,6 +45,11 @@
         </div>
       </div>
     </div>
+
+    <div class="welcome-footer">
+      <span>{{ t('welcome.footerText') }}</span>
+      <button class="github-link" @click="openGithub">{{ t('welcome.footerStar') }}</button>
+    </div>
   </div>
 </template>
 
@@ -129,6 +134,11 @@ const openSettings = () => {
 
 const showHelp = () => {
   ttsStore.openHelpDialog()
+}
+
+const { shell } = require('electron')
+function openGithub() {
+  shell.openExternal('https://github.com/wavesnows/snowote')
 }
 </script>
 
@@ -273,5 +283,32 @@ h1 {
   .section-title {
     text-align: left;
   }
+}
+
+.welcome-footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: #909399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.github-link {
+  background: none;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 13px;
+  color: #409eff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.github-link:hover {
+  background: #ecf5ff;
+  border-color: #409eff;
 }
 </style>

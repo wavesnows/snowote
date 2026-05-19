@@ -282,6 +282,13 @@ const zh = {
       terminalFeature1: '使用 Ctrl+` 或点击底栏 ⌨ 图标切换显示',
       terminalFeature2: '拖拽顶边调整高度，或使用工具栏的尺寸预设按钮（▁▄█）',
       terminalFeature3: '输入 exit 关闭终端会话，面板自动收起',
+      about: '关于',
+      aboutVersion: '版本',
+      aboutDesc: '本地优先的轻量笔记应用，支持 Markdown、Git 同步和版本历史。',
+      aboutGithub: '在 GitHub 上 Star ⭐',
+      aboutDonate: '请作者喝杯咖啡 ☕',
+      aboutDonateWechat: '微信支付',
+      aboutDonateAlipay: '支付宝',
     },
     welcome: {
       title: '欢迎使用雪记',
@@ -297,6 +304,8 @@ const zh = {
       tip1: '点击左侧文件夹创建新笔记',
       tip2: '使用 Cmd+S 保存，Cmd+F 搜索',
       tip3: '在设置中启用 Git 同步进行备份',
+      footerText: '觉得好用？',
+      footerStar: '去 GitHub 点个 Star ⭐',
     },
     scheduler: {
       title: '定时任务',

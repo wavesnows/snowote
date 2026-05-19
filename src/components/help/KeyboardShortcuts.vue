@@ -96,6 +96,31 @@
           </ul>
         </template>
 
+        <!-- About -->
+        <template v-if="activeSection === 'about'">
+          <h2>{{ t('help.about') }}</h2>
+          <div class="about-app">
+            <el-icon :size="48" color="#409eff"><Document /></el-icon>
+            <div class="about-name">snowote <span class="about-cn">雪记</span></div>
+            <div class="about-version">{{ t('help.aboutVersion') }} {{ appVersion }}</div>
+            <p class="about-desc">{{ t('help.aboutDesc') }}</p>
+            <el-button type="primary" @click="openGithub" style="margin-top:8px">
+              {{ t('help.aboutGithub') }}
+            </el-button>
+          </div>
+          <h3>{{ t('help.aboutDonate') }}</h3>
+          <div class="about-donate">
+            <div class="donate-item">
+              <img src="../../assets/wx.jpg" alt="WeChat Pay" />
+              <span>{{ t('help.aboutDonateWechat') }}</span>
+            </div>
+            <div class="donate-item">
+              <img src="../../assets/zfb.jpg" alt="Alipay" />
+              <span>{{ t('help.aboutDonateAlipay') }}</span>
+            </div>
+          </div>
+        </template>
+
         <!-- Shortcuts -->
         <template v-if="activeSection === 'shortcuts'">
           <h2>{{ t('help.keyboardShortcuts') }}</h2>
@@ -169,11 +194,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useTtsStore } from '@/store/store';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { Document } from '@element-plus/icons-vue';
 
+const { ipcRenderer } = require('electron');
+const { shell } = require('electron');
 const { t } = useI18n();
 const ttsStore = useTtsStore();
 const { helpDialog } = storeToRefs(ttsStore);
@@ -186,6 +214,15 @@ const visible = computed({
 const isMac = computed(() => navigator.platform.toUpperCase().indexOf('MAC') >= 0);
 const activeSection = ref('start');
 const contentEl = ref<HTMLElement | null>(null);
+const appVersion = ref('');
+
+onMounted(async () => {
+  appVersion.value = await ipcRenderer.invoke('app:version');
+});
+
+function openGithub() {
+  shell.openExternal('https://github.com/wavesnows/snowote');
+}
 
 const sections = computed(() => [
   { id: 'start', label: t('help.gettingStarted') },
@@ -194,6 +231,7 @@ const sections = computed(() => [
   { id: 'git', label: t('help.gitSync') },
   { id: 'terminal', label: t('help.terminalTitle') },
   { id: 'shortcuts', label: t('help.keyboardShortcuts') },
+  { id: 'about', label: t('help.about') },
 ]);
 
 function handleClose() {
@@ -318,5 +356,61 @@ function handleClose() {
 .description {
   font-size: 13px;
   color: #606266;
+}
+
+.about-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 0 24px;
+  gap: 6px;
+}
+
+.about-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #303133;
+}
+
+.about-cn {
+  font-size: 16px;
+  color: #909399;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.about-version {
+  font-size: 13px;
+  color: #909399;
+}
+
+.about-desc {
+  font-size: 13px;
+  color: #606266;
+  max-width: 360px;
+  margin: 4px 0 0;
+}
+
+.about-donate {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.donate-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #606266;
+}
+
+.donate-item img {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 </style>

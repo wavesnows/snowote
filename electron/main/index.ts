@@ -356,6 +356,8 @@ ipcMain.handle('git:diff', async (_event, { repoPath, hashA, hashB, filePath }: 
   }
 })
 
+ipcMain.handle('app:version', () => app.getVersion())
+
 // Scheduler IPC handlers
 ipcMain.handle('scheduler:list', () => schedulerHandleList())
 ipcMain.handle('scheduler:save', async (_event, task) => schedulerHandleSave(task))

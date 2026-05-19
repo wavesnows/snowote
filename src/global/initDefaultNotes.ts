@@ -4,7 +4,7 @@ import os from 'os';
 const Store = require('electron-store');
 const store = new Store();
 const homeDir = os.homedir();
-const defaultDir = path.join(homeDir,'yesnote');
+const defaultDir = path.join(homeDir, 'snowote');
 
 interface FormConfig {
   languageSelect: string;

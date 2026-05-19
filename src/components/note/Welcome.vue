@@ -44,11 +44,11 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="welcome-footer">
-      <span>{{ t('welcome.footerText') }}</span>
-      <button class="github-link" @click="openGithub">{{ t('welcome.footerStar') }}</button>
+      <div class="welcome-footer">
+        <span>{{ t('welcome.footerText') }}</span>
+        <button class="github-link" @click="openGithub">{{ t('welcome.footerStar') }}</button>
+      </div>
     </div>
   </div>
 </template>

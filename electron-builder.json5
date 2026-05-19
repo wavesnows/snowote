@@ -1,6 +1,6 @@
 {
-  "appId": "com.wavesnow.notelite",
-  "productName": "notelite",
+  "appId": "com.wavesnow.snowote",
+  "productName": "snowote",
   "asar": true,
   "directories": {
     "output": "release/${version}"

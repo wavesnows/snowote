@@ -21,8 +21,8 @@ A lightweight, local-first note-taking app built with Electron and Vue 3. Write 
 
 Download the latest installer from [Releases](../../releases):
 
-- macOS: `notelite_x.x.x.dmg`
-- Windows: `notelite_x.x.x.exe`
+- macOS: `snowote_x.x.x.dmg`
+- Windows: `snowote_x.x.x.exe`
 
 ## Build from Source
 
@@ -44,7 +44,7 @@ See [User Guide](docs/user-guide.md) for details.
 
 ## Donate
 
-If notelite is useful to you, consider buying me a coffee ☕
+If snowote is useful to you, consider buying me a coffee ☕
 
 <img src="src/assets/wx.jpg" width="180" alt="WeChat Pay"> <img src="src/assets/zfb.jpg" width="180" alt="Alipay">
 

@@ -3,7 +3,7 @@
 ## Quick Start
 
 1. Download the latest release from [GitHub Releases](../../../releases)
-2. Install and open notelite
+2. Install and open snowote
 3. Choose a folder as your notes directory
 4. Start writing!
 

@@ -21,8 +21,8 @@
 
 从 [Releases](../../releases) 下载最新安装包：
 
-- macOS：`notelite_x.x.x.dmg`
-- Windows：`notelite_x.x.x.exe`
+- macOS：`snowote_x.x.x.dmg`
+- Windows：`snowote_x.x.x.exe`
 
 ## 从源码构建
 
@@ -42,7 +42,7 @@ npm run build    # 生产构建
 
 ## 捐赠
 
-如果 notelite 对你有帮助，欢迎请我喝杯咖啡 ☕
+如果 snowote 对你有帮助，欢迎请我喝杯咖啡 ☕
 
 <img src="src/assets/wx.jpg" width="180" alt="微信支付"> <img src="src/assets/zfb.jpg" width="180" alt="支付宝">
 

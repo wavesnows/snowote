@@ -101,7 +101,7 @@ const createNote = async () => {
   const emptyEditorData = {
     time: Date.now(),
     blocks: [
-      { type: "header", data: { text: "Welcome to YesnoteLite 👋", level: 1 } },
+      { type: "header", data: { text: "Welcome to snowote 👋", level: 1 } },
       { type: "paragraph", data: { text: "Start writing your notes here." } }
     ],
     version: "2.26.5"

@@ -55,7 +55,7 @@ export function initDefaultNotebook(dir:string):string{
             const demoNote = JSON.stringify({
                 time: Date.now(),
                 blocks: [
-                    { type: "header", data: { text: "Welcome to YesnoteLite 👋", level: 1 } },
+                    { type: "header", data: { text: "Welcome to snowote 👋", level: 1 } },
                     { type: "paragraph", data: { text: "This is your first note. Start writing!" } }
                 ],
                 version: "2.26.5"

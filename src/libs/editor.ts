@@ -16,14 +16,9 @@ import path from 'path';
 import fs from 'fs';
 let editorInstance: EditorJS
 
-// 定义编辑器元素类型
-interface EditorElement extends HTMLElement {
-  value: string;
-}
-
-export function initEditor(editor: EditorElement){
+export function initEditor(holder: HTMLElement){
     editorInstance = new EditorJS({
-        holder: editor.value,
+        holder: holder,
         tools: {
           header: {
             class: Header,

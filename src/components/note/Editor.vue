@@ -48,7 +48,7 @@ watch(
 )
 
 onMounted(() => {
-  editorInstance = initEditor(editor.value as any)
+  editorInstance = initEditor(editor.value!)
   ttsStore.editorInstance = editorInstance;
 
   // Start auto-save

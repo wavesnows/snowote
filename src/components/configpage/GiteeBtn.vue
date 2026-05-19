@@ -19,7 +19,7 @@
 <script setup lang="ts">
 const { shell } = require("electron");
 const gitee = () => {
-  shell.openExternal("https://gitee.com/LGW_space/tts-vue");
+  shell.openExternal("https://github.com/wavesnows/snowote");
 };
 </script>
 

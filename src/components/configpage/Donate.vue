@@ -6,13 +6,9 @@
         欢迎<span>Star</span>、<span>Fork</span>和<span>PR</span>。你的Star是对作者最好的鼓励：）
       </h3>
       <p style="margin: 0 10px; font-size: 11px">
-        不再有自建的群聊，有问题请在
-        <a href="https://github.com/LokerL/tts-vue/issues" target="_blank"
+        有问题请在
+        <a href="https://github.com/wavesnows/snowote/issues" target="_blank"
           >GitHub Issues</a
-        >
-        或者
-        <a href="https://gitee.com/LGW_space/tts-vue/issues" target="_blank"
-          >Gitee Issues</a
         >
         进行提问或反馈。
       </p>

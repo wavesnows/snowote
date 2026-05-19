@@ -21,7 +21,7 @@
 <script setup lang="ts">
 const { shell } = require("electron");
 const github = () => {
-  shell.openExternal("https://github.com/LokerL/tts-vue");
+  shell.openExternal("https://github.com/wavesnows/snowote");
 };
 </script>
 

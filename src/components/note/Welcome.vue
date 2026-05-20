@@ -286,29 +286,33 @@ h1 {
 }
 
 .welcome-footer {
-  margin-top: 32px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   text-align: center;
   font-size: 13px;
-  color: #909399;
+  color: #606266;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .github-link {
-  background: none;
-  border: 1px solid #dcdfe6;
-  border-radius: 6px;
-  padding: 3px 10px;
+  background: #fffbe6;
+  border: 1px solid #ffd666;
+  border-radius: 20px;
+  padding: 4px 14px;
   font-size: 13px;
-  color: #409eff;
+  color: #d48806;
   cursor: pointer;
   transition: all 0.2s;
+  font-weight: 500;
 }
 
 .github-link:hover {
-  background: #ecf5ff;
-  border-color: #409eff;
+  background: #fff1b8;
+  border-color: #faad14;
+  color: #ad6800;
 }
 </style>

@@ -40,8 +40,8 @@
 
         <!-- 右列：提示 + 关于 -->
         <div class="right-column">
+          <h3 class="section-title">{{ t('welcome.tipsTitle') }}</h3>
           <div class="tips">
-            <h3>{{ t('welcome.tipsTitle') }}</h3>
             <ul>
               <li>{{ t('welcome.tip1') }}</li>
               <li>{{ t('welcome.tip2') }}</li>
@@ -280,13 +280,6 @@ h1 {
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.tips h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-  margin: 0 0 20px 0;
 }
 
 .tips ul {

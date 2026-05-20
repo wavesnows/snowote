@@ -215,6 +215,32 @@
             </el-form>
           </el-tab-pane>
 
+          <!-- Tab 4: 关于 -->
+          <el-tab-pane :label="t('help.about')">
+            <div class="about-tab" style="-webkit-app-region: no-drag">
+              <div class="about-tab-header">
+                <el-icon :size="48" color="#409eff"><Document /></el-icon>
+                <div class="about-tab-name">snowote <span class="about-tab-cn">雪记</span></div>
+                <div class="about-tab-version">v{{ appVersion }}</div>
+              </div>
+              <p class="about-tab-desc">{{ t('help.aboutDesc') }}</p>
+              <el-button type="primary" @click="openGithub" style="margin-bottom:24px">
+                {{ t('help.aboutGithub') }}
+              </el-button>
+              <div class="about-tab-donate-title">{{ t('help.aboutDonate') }}</div>
+              <div class="about-tab-qr">
+                <div class="about-tab-qr-item">
+                  <img src="../../../assets/wx.jpg" alt="WeChat Pay" />
+                  <span>{{ t('help.aboutDonateWechat') }}</span>
+                </div>
+                <div class="about-tab-qr-item">
+                  <img src="../../../assets/zfb.jpg" alt="Alipay" />
+                  <span>{{ t('help.aboutDonateAlipay') }}</span>
+                </div>
+              </div>
+            </div>
+          </el-tab-pane>
+
         </el-tabs>
       </template>
     </el-drawer>
@@ -266,8 +292,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed } from 'vue'
-  import { Refresh, Setting, Plus, Download, Upload, Suitcase } from '@element-plus/icons-vue'
+  import { ref, computed, onMounted } from 'vue'
+  import { Refresh, Setting, Plus, Download, Upload, Suitcase, Document } from '@element-plus/icons-vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { useTtsStore, Tree } from "@/store/store";
   import { storeToRefs } from "pinia";
@@ -282,6 +308,15 @@
 
   const { t, locale } = useI18n();
   const formLabelWidth = '140px';
+  const appVersion = ref('')
+  const showDonateDialog = ref(false)
+  onMounted(async () => {
+    appVersion.value = await ipcRenderer.invoke('app:version')
+  })
+  function openGithub() {
+    const { shell } = require('electron')
+    shell.openExternal('https://github.com/wavesnows/snowote')
+  }
   const dialogFormVisible = ref(false)
   const addDialogTab = ref('local')
   const rootFolderName = ref('')
@@ -699,6 +734,76 @@
   padding: 0 0 8px 0;
   border-bottom: 1px solid #ebeef5;
   margin-bottom: 12px;
+}
+
+.about-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.about-tab-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.about-tab-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #303133;
+}
+
+.about-tab-cn {
+  font-size: 14px;
+  color: #909399;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.about-tab-version {
+  font-size: 12px;
+  color: #c0c4cc;
+}
+
+.about-tab-desc {
+  font-size: 13px;
+  color: #606266;
+  line-height: 1.6;
+  margin: 0 0 16px;
+  max-width: 280px;
+}
+
+.about-tab-donate-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 16px;
+}
+
+.about-tab-qr {
+  display: flex;
+  gap: 24px;
+}
+
+.about-tab-qr-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #606266;
+}
+
+.about-tab-qr-item img {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 </style>

@@ -31,15 +31,22 @@
         </el-menu-item>-->
       </el-menu>
         <!--<el-divider class="divider"/>-->
-      <div class="setting"><AConf/></div>
+      <div class="bottom-btns">
+        <el-tooltip content="Home" placement="right">
+          <div class="home-btn" @click="goHome">
+            <el-icon><House /></el-icon>
+          </div>
+        </el-tooltip>
+        <AConf/>
+      </div>
     </div>
   </template>
-  
+
   <script setup lang="ts">
   import { useTtsStore } from "@/store/store";
   import { storeToRefs } from "pinia";
   import AConf from "./AConfig.vue";
-  import { StarFilled, Clock, Timer } from '@element-plus/icons-vue';
+  import { StarFilled, Clock, Timer, House } from '@element-plus/icons-vue';
 
   const ttsStore = useTtsStore();
   const { page, config } = storeToRefs(ttsStore);
@@ -47,6 +54,11 @@
   const menuChange = (index: any) => {
     ttsStore.page.asideIndex = index.toString();
   };
+
+  function goHome() {
+    ttsStore.cnote.lastPath = '';
+    ttsStore.inputs.notePath = '';
+  }
   </script>
   
   <style scoped>
@@ -78,9 +90,26 @@
   .is-active {
     border-left: 2px solid;
   }
-  .setting{
-    margin-left: 0px;
-    margin-bottom: 0px;
+  .bottom-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .home-btn {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #909399;
+    transition: color 0.2s;
+    -webkit-app-region: no-drag;
+  }
+
+  .home-btn:hover {
+    color: #409eff;
   }
 
   </style>

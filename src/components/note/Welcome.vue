@@ -42,6 +42,21 @@
               <li>{{ t('welcome.tip3') }}</li>
             </ul>
           </div>
+
+          <div class="about-card">
+            <div class="about-card-header">
+              <el-icon :size="28" color="#409eff"><Document /></el-icon>
+              <div>
+                <div class="about-card-name">snowote <span class="about-card-cn">雪记</span></div>
+                <div class="about-card-version">v{{ appVersion }}</div>
+              </div>
+            </div>
+            <p class="about-card-desc">{{ t('help.aboutDesc') }}</p>
+            <div class="about-card-actions">
+              <button class="about-btn-star" @click="openGithub">{{ t('help.aboutGithub') }}</button>
+              <button class="about-btn-help" @click="showHelp">{{ t('welcome.help') }}</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -54,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { Document, DocumentAdd, Setting, QuestionFilled } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useTtsStore } from '@/store/store'
@@ -136,7 +152,12 @@ const showHelp = () => {
   ttsStore.openHelpDialog()
 }
 
-const { shell } = require('electron')
+const { shell, ipcRenderer } = require('electron')
+const appVersion = ref('')
+onMounted(async () => {
+  appVersion.value = await ipcRenderer.invoke('app:version')
+})
+
 function openGithub() {
   shell.openExternal('https://github.com/wavesnows/snowote')
 }
@@ -283,6 +304,86 @@ h1 {
   .section-title {
     text-align: left;
   }
+}
+
+.about-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 16px;
+}
+
+.about-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.about-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.about-card-cn {
+  font-size: 13px;
+  color: #909399;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.about-card-version {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 2px;
+}
+
+.about-card-desc {
+  font-size: 13px;
+  color: #606266;
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+
+.about-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.about-btn-star {
+  background: #fffbe6;
+  border: 1px solid #ffd666;
+  border-radius: 16px;
+  padding: 4px 14px;
+  font-size: 12px;
+  color: #d48806;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.about-btn-star:hover {
+  background: #fff1b8;
+  border-color: #faad14;
+}
+
+.about-btn-help {
+  background: #f5f7fa;
+  border: 1px solid #dcdfe6;
+  border-radius: 16px;
+  padding: 4px 14px;
+  font-size: 12px;
+  color: #606266;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.about-btn-help:hover {
+  background: #ecf5ff;
+  border-color: #409eff;
+  color: #409eff;
 }
 
 .welcome-footer {

@@ -58,7 +58,6 @@
             </div>
             <p class="about-card-desc">{{ t('help.aboutDesc') }}</p>
             <div class="about-card-actions">
-              <button class="about-btn-star" @click="openGithub">{{ t('help.aboutGithub') }}</button>
               <button class="about-btn-coffee" @click="showDonate = true">{{ t('help.aboutDonate') }}</button>
             </div>
           </div>
@@ -351,27 +350,13 @@ h1 {
   gap: 8px;
 }
 
-.about-btn-star, .about-btn-coffee {
+.about-btn-coffee {
   border-radius: 16px;
   padding: 4px 14px;
   font-size: 12px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
-}
-
-.about-btn-star {
-  background: #fffbe6;
-  border: 1px solid #ffd666;
-  color: #d48806;
-}
-
-.about-btn-star:hover {
-  background: #fff1b8;
-  border-color: #faad14;
-}
-
-.about-btn-coffee {
   background: #fff0f0;
   border: 1px solid #ffb8b8;
   color: #c0392b;

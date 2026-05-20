@@ -6,7 +6,9 @@
           <el-icon :size="80" color="#409eff"><Document /></el-icon>
         </div>
         <h1>{{ t('welcome.title') }}</h1>
-        <p class="subtitle">{{ t('welcome.subtitle') }}</p>
+        <div class="header-version">v{{ appVersion }}</div>
+        <p class="subtitle">{{ t('help.aboutDesc') }}</p>
+        <button class="header-donate-btn" @click="showDonate = true">{{ t('help.aboutDonate') }}</button>
       </div>
 
       <div class="welcome-body">
@@ -48,19 +50,6 @@
             </ul>
           </div>
 
-          <div class="about-card">
-            <div class="about-card-header">
-              <el-icon :size="28" color="#409eff"><Document /></el-icon>
-              <div>
-                <div class="about-card-name">snowote <span class="about-card-cn">雪记</span></div>
-                <div class="about-card-version">v{{ appVersion }}</div>
-              </div>
-            </div>
-            <p class="about-card-desc">{{ t('help.aboutDesc') }}</p>
-            <div class="about-card-actions">
-              <button class="about-btn-coffee" @click="showDonate = true">{{ t('help.aboutDonate') }}</button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -201,10 +190,37 @@ h1 {
   margin: 0 0 10px 0;
 }
 
+.header-version {
+  font-size: 12px;
+  color: #c0c4cc;
+  margin: 4px 0 10px;
+}
+
 .subtitle {
-  font-size: 16px;
+  font-size: 15px;
   color: #606266;
-  margin: 0;
+  margin: 0 0 16px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.header-donate-btn {
+  background: #fff0f0;
+  border: 1px solid #ffb8b8;
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-size: 13px;
+  color: #c0392b;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.header-donate-btn:hover {
+  background: #ffe4e4;
+  border-color: #ff7875;
 }
 
 .welcome-body {
@@ -303,69 +319,6 @@ h1 {
 }
 
 .tips li:last-child { margin-bottom: 0; }
-
-.about-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 16px;
-}
-
-.about-card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.about-card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.about-card-cn {
-  font-size: 13px;
-  color: #909399;
-  font-weight: 400;
-  margin-left: 4px;
-}
-
-.about-card-version {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 2px;
-}
-
-.about-card-desc {
-  font-size: 13px;
-  color: #606266;
-  margin: 0 0 14px;
-  line-height: 1.6;
-}
-
-.about-card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.about-btn-coffee {
-  border-radius: 16px;
-  padding: 4px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-  background: #fff0f0;
-  border: 1px solid #ffb8b8;
-  color: #c0392b;
-}
-
-.about-btn-coffee:hover {
-  background: #ffe4e4;
-  border-color: #ff7875;
-}
 
 /* 底部 */
 .welcome-footer {

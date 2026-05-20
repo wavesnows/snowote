@@ -2,7 +2,7 @@
 
 A lightweight, local-first note-taking app built with Electron and Vue 3. Write in Markdown or rich text, sync with Git, and browse version history — all without leaving your desktop.
 
-[Download](../../releases) · [User Guide](docs/user-guide.md) · [中文说明](README_CN.md)
+[Download](../../releases) · [Guide](docs/guide.md) · [中文说明](README_CN.md)
 
 ---
 

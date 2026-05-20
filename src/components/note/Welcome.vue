@@ -10,6 +10,7 @@
       </div>
 
       <div class="welcome-body">
+        <!-- 左列：2×2 快捷操作 -->
         <div class="left-column">
           <h3 class="section-title">{{ t('welcome.quickActions') }}</h3>
           <div class="quick-actions">
@@ -18,21 +19,25 @@
               <h3>{{ t('welcome.createNote') }}</h3>
               <p>{{ t('welcome.createNoteDesc') }}</p>
             </div>
-
             <div class="action-card" @click="openSettings">
               <el-icon :size="32" color="#e6a23c"><Setting /></el-icon>
               <h3>{{ t('welcome.settings') }}</h3>
               <p>{{ t('welcome.settingsDesc') }}</p>
             </div>
-
             <div class="action-card" @click="showHelp">
               <el-icon :size="32" color="#909399"><QuestionFilled /></el-icon>
               <h3>{{ t('welcome.help') }}</h3>
               <p>{{ t('welcome.helpDesc') }}</p>
             </div>
+            <div class="action-card" @click="showDonate = true">
+              <span class="coffee-icon">☕</span>
+              <h3>{{ t('welcome.donate') }}</h3>
+              <p>{{ t('welcome.donateDesc') }}</p>
+            </div>
           </div>
         </div>
 
+        <!-- 右列：提示 + 关于 -->
         <div class="right-column">
           <div class="tips">
             <h3>{{ t('welcome.tipsTitle') }}</h3>
@@ -54,7 +59,7 @@
             <p class="about-card-desc">{{ t('help.aboutDesc') }}</p>
             <div class="about-card-actions">
               <button class="about-btn-star" @click="openGithub">{{ t('help.aboutGithub') }}</button>
-              <button class="about-btn-help" @click="showHelp">{{ t('welcome.help') }}</button>
+              <button class="about-btn-coffee" @click="showDonate = true">{{ t('help.aboutDonate') }}</button>
             </div>
           </div>
         </div>
@@ -65,6 +70,28 @@
         <button class="github-link" @click="openGithub">{{ t('welcome.footerStar') }}</button>
       </div>
     </div>
+
+    <!-- 捐助弹窗 -->
+    <el-dialog
+      v-model="showDonate"
+      :title="t('welcome.donateTitle')"
+      width="420px"
+      align-center
+    >
+      <div class="donate-dialog">
+        <p class="donate-desc">{{ t('welcome.donateDialogDesc') }}</p>
+        <div class="donate-qr">
+          <div class="qr-item">
+            <img src="../../assets/wx.jpg" alt="WeChat Pay" />
+            <span>{{ t('help.aboutDonateWechat') }}</span>
+          </div>
+          <div class="qr-item">
+            <img src="../../assets/zfb.jpg" alt="Alipay" />
+            <span>{{ t('help.aboutDonateAlipay') }}</span>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -76,12 +103,12 @@ import { useTtsStore } from '@/store/store'
 
 const { t } = useI18n()
 const ttsStore = useTtsStore()
+const showDonate = ref(false)
 
 const createNote = async () => {
   const fs = await import('fs')
   const path = await import('path')
 
-  // Ensure notebook directory exists
   const notebookPath = ttsStore.notebook.currentPath
   if (!fs.existsSync(notebookPath)) {
     try {
@@ -92,15 +119,11 @@ const createNote = async () => {
     }
   }
 
-  // Check if there are any folders
   if (ttsStore.treeMenu.data.length === 0) {
-    const folderName = 'notes'
-    const folderPath = path.join(notebookPath, folderName)
-
+    const folderPath = path.join(notebookPath, 'notes')
     try {
       fs.mkdirSync(folderPath, { recursive: true })
       ttsStore.refreshTreeData()
-      // Wait for tree to update
       await new Promise(resolve => setTimeout(resolve, 200))
     } catch (error) {
       console.error('Failed to create folder:', error)
@@ -108,17 +131,10 @@ const createNote = async () => {
     }
   }
 
-  // Re-read tree data to get latest state
   const treeData = ttsStore.treeMenu.data
-  if (treeData.length === 0) {
-    console.error('No folders available after creation')
-    return
-  }
+  if (treeData.length === 0) return
 
-  const firstFolder = treeData[0]
-  const noteName = 'Welcome'
-  const notePath = path.join(firstFolder.path, noteName + '.json')
-
+  const notePath = path.join(treeData[0].path, 'Welcome.json')
   const emptyEditorData = {
     time: Date.now(),
     blocks: [
@@ -132,10 +148,9 @@ const createNote = async () => {
     fs.writeFileSync(notePath, JSON.stringify(emptyEditorData, null, 2), 'utf8')
     ttsStore.refreshTreeData()
     await new Promise(resolve => setTimeout(resolve, 200))
-
     ttsStore.inputs.notePath = notePath
-    ttsStore.cnote.title = noteName
-    ttsStore.cnote.destTitle = noteName
+    ttsStore.cnote.title = 'Welcome'
+    ttsStore.cnote.destTitle = 'Welcome'
     ttsStore.cnote.lastPath = notePath
     ttsStore.editerData = emptyEditorData
     ttsStore.setLastEditNote()
@@ -144,13 +159,8 @@ const createNote = async () => {
   }
 }
 
-const openSettings = () => {
-  ttsStore.config.drawer = true
-}
-
-const showHelp = () => {
-  ttsStore.openHelpDialog()
-}
+const openSettings = () => { ttsStore.config.drawer = true }
+const showHelp = () => { ttsStore.openHelpDialog() }
 
 const { shell, ipcRenderer } = require('electron')
 const appVersion = ref('')
@@ -183,9 +193,7 @@ function openGithub() {
   margin-bottom: 40px;
 }
 
-.logo {
-  margin-bottom: 20px;
-}
+.logo { margin-bottom: 20px; }
 
 h1 {
   font-size: 32px;
@@ -206,11 +214,8 @@ h1 {
   gap: 30px;
 }
 
-/* Two column layout for wider screens */
 @media (min-width: 900px) {
-  .welcome-body {
-    grid-template-columns: 1fr 1fr;
-  }
+  .welcome-body { grid-template-columns: 1fr 1fr; }
 }
 
 .section-title {
@@ -227,23 +232,24 @@ h1 {
   flex-direction: column;
 }
 
+/* 2×2 网格 */
 .quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
 .action-card {
   background: white;
-  padding: 24px;
+  padding: 20px 16px;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
-  gap: 16px;
-  text-align: left;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .action-card:hover {
@@ -251,29 +257,31 @@ h1 {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-.action-card .el-icon {
-  flex-shrink: 0;
-}
-
 .action-card h3 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #303133;
-  margin: 0 0 4px 0;
-}
-
-.action-card p {
-  font-size: 13px;
-  color: #909399;
   margin: 0;
 }
 
+.action-card p {
+  font-size: 12px;
+  color: #909399;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.coffee-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+/* 右列 */
 .tips {
   background: white;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: 100%;
 }
 
 .tips h3 {
@@ -295,16 +303,7 @@ h1 {
   margin-bottom: 12px;
 }
 
-.tips li:last-child {
-  margin-bottom: 0;
-}
-
-/* Single column layout for narrow screens */
-@media (max-width: 899px) {
-  .section-title {
-    text-align: left;
-  }
-}
+.tips li:last-child { margin-bottom: 0; }
 
 .about-card {
   background: white;
@@ -352,16 +351,19 @@ h1 {
   gap: 8px;
 }
 
-.about-btn-star {
-  background: #fffbe6;
-  border: 1px solid #ffd666;
+.about-btn-star, .about-btn-coffee {
   border-radius: 16px;
   padding: 4px 14px;
   font-size: 12px;
-  color: #d48806;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
+}
+
+.about-btn-star {
+  background: #fffbe6;
+  border: 1px solid #ffd666;
+  color: #d48806;
 }
 
 .about-btn-star:hover {
@@ -369,23 +371,18 @@ h1 {
   border-color: #faad14;
 }
 
-.about-btn-help {
-  background: #f5f7fa;
-  border: 1px solid #dcdfe6;
-  border-radius: 16px;
-  padding: 4px 14px;
-  font-size: 12px;
-  color: #606266;
-  cursor: pointer;
-  transition: all 0.2s;
+.about-btn-coffee {
+  background: #fff0f0;
+  border: 1px solid #ffb8b8;
+  color: #c0392b;
 }
 
-.about-btn-help:hover {
-  background: #ecf5ff;
-  border-color: #409eff;
-  color: #409eff;
+.about-btn-coffee:hover {
+  background: #ffe4e4;
+  border-color: #ff7875;
 }
 
+/* 底部 */
 .welcome-footer {
   margin-top: 40px;
   padding-top: 24px;
@@ -415,5 +412,46 @@ h1 {
   background: #fff1b8;
   border-color: #faad14;
   color: #ad6800;
+}
+
+/* 捐助弹窗 */
+.donate-dialog {
+  text-align: center;
+}
+
+.donate-desc {
+  font-size: 14px;
+  color: #606266;
+  margin: 0 0 24px;
+}
+
+.donate-qr {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.qr-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.qr-item img {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.qr-item span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #303133;
+}
+
+@media (max-width: 899px) {
+  .section-title { text-align: left; }
 }
 </style>

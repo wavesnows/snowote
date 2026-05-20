@@ -306,6 +306,10 @@ const zh = {
       tip3: '在设置中启用 Git 同步进行备份',
       footerText: '觉得好用？',
       footerStar: '去 GitHub 点个 Star ⭐',
+      donate: '请作者喝咖啡',
+      donateDesc: '如果觉得好用，请支持一下',
+      donateTitle: '请作者喝杯咖啡 ☕',
+      donateDialogDesc: '感谢你的支持，这对我很重要 ❤️',
     },
     scheduler: {
       title: '定时任务',

@@ -306,6 +306,10 @@ const en = {
       tip3: 'Enable Git sync in settings for backup',
       footerText: 'Enjoying snowote?',
       footerStar: 'Star it on GitHub ⭐',
+      donate: 'Buy me a coffee',
+      donateDesc: 'Support the project',
+      donateTitle: 'Buy me a coffee ☕',
+      donateDialogDesc: 'Thank you for your support, it means a lot ❤️',
     },
     scheduler: {
       title: 'Scheduler',

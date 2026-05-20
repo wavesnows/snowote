@@ -225,11 +225,11 @@
               <div class="about-tab-donate-title">{{ t('help.aboutDonate') }}</div>
               <div class="about-tab-qr">
                 <div class="about-tab-qr-item">
-                  <img src="../../../assets/wx.jpg" alt="WeChat Pay" />
+                  <img src="../../assets/wx.jpg" alt="WeChat Pay" />
                   <span>{{ t('help.aboutDonateWechat') }}</span>
                 </div>
                 <div class="about-tab-qr-item">
-                  <img src="../../../assets/zfb.jpg" alt="Alipay" />
+                  <img src="../../assets/zfb.jpg" alt="Alipay" />
                   <span>{{ t('help.aboutDonateAlipay') }}</span>
                 </div>
               </div>

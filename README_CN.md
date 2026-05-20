@@ -44,7 +44,21 @@ npm run build    # 生产构建
 
 如果 snowote 对你有帮助，欢迎请我喝杯咖啡 ☕
 
-<img src="src/assets/wx.jpg" width="180" alt="微信支付"> <img src="src/assets/zfb.jpg" width="180" alt="支付宝">
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="src/assets/wx.jpg" width="200" alt="微信支付" /><br/>
+        <sub><b>微信支付</b></sub>
+      </td>
+      <td width="40"></td>
+      <td align="center">
+        <img src="src/assets/zfb.jpg" width="200" alt="支付宝" /><br/>
+        <sub><b>支付宝</b></sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## 协议
 

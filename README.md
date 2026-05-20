@@ -46,7 +46,21 @@ See [User Guide](docs/user-guide.md) for details.
 
 If snowote is useful to you, consider buying me a coffee ☕
 
-<img src="src/assets/wx.jpg" width="180" alt="WeChat Pay"> <img src="src/assets/zfb.jpg" width="180" alt="Alipay">
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="src/assets/wx.jpg" width="200" alt="WeChat Pay" /><br/>
+        <sub><b>WeChat Pay</b></sub>
+      </td>
+      <td width="40"></td>
+      <td align="center">
+        <img src="src/assets/zfb.jpg" width="200" alt="Alipay" /><br/>
+        <sub><b>Alipay</b></sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## License
 

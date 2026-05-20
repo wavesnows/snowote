@@ -93,13 +93,13 @@
                   <el-option :label="t('settings.chinese')" value="zh_CN" />
                 </el-select>
               </el-form-item>
-              <el-form-item label="MD 预览主题">
+              <el-form-item :label="t('settings.mdPreviewTheme')">
                 <el-select :model-value="ttsStore.mdTheme" @change="(v: string) => ttsStore.setMdTheme(v)" style="width: 200px;">
-                  <el-option label="🩵 青绿经典（默认）" value="teal" />
-                  <el-option label="🟢 墨绿极简" value="default" />
-                  <el-option label="🟣 蓝紫知性" value="purple" />
-                  <el-option label="🟠 暖橙活力" value="orange" />
-                  <el-option label="🔴 红黑经典" value="red" />
+                  <el-option :label="t('settings.themeTeal')" value="teal" />
+                  <el-option :label="t('settings.themeGreen')" value="default" />
+                  <el-option :label="t('settings.themePurple')" value="purple" />
+                  <el-option :label="t('settings.themeOrange')" value="orange" />
+                  <el-option :label="t('settings.themeRed')" value="red" />
                 </el-select>
               </el-form-item>
             </el-form>

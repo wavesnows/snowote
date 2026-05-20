@@ -34,16 +34,6 @@
       >
         <el-icon v-show="currShow == 3"><FullScreen /></el-icon>
       </el-button>
-      <el-tooltip :content="t('tools.openDevTools')" placement="bottom">
-        <el-button
-          size="small"
-          circle
-          class="circle-btn"
-          @click="ipcRenderer.send('openDevTools')"
-        >
-          <el-icon><Monitor /></el-icon>
-        </el-button>
-      </el-tooltip>
       <el-tooltip :content="t('help.keyboardShortcuts')" placement="bottom">
         <el-button
           size="small"

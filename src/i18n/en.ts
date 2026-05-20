@@ -291,7 +291,7 @@ const en = {
       aboutDonateAlipay: 'Alipay',
     },
     welcome: {
-      title: 'Welcome to snowote',
+      title: 'snowote',
       subtitle: 'A simple and elegant note-taking app',
       quickActions: 'Quick Actions',
       createNote: 'Create Note',

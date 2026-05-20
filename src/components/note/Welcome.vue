@@ -8,7 +8,6 @@
         <h1>{{ t('welcome.title') }}</h1>
         <div class="header-version">v{{ appVersion }}</div>
         <p class="subtitle">{{ t('help.aboutDesc') }}</p>
-        <button class="header-donate-btn" @click="showDonate = true">{{ t('help.aboutDonate') }}</button>
       </div>
 
       <div class="welcome-body">
@@ -206,22 +205,6 @@ h1 {
   line-height: 1.6;
 }
 
-.header-donate-btn {
-  background: #fff0f0;
-  border: 1px solid #ffb8b8;
-  border-radius: 20px;
-  padding: 6px 20px;
-  font-size: 13px;
-  color: #c0392b;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.header-donate-btn:hover {
-  background: #ffe4e4;
-  border-color: #ff7875;
-}
 
 .welcome-body {
   display: grid;

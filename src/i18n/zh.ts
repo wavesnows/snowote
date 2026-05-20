@@ -291,7 +291,7 @@ const zh = {
       aboutDonateAlipay: '支付宝',
     },
     welcome: {
-      title: '欢迎使用雪记',
+      title: '雪记',
       subtitle: '简洁优雅的笔记应用',
       quickActions: '快速操作',
       createNote: '创建笔记',

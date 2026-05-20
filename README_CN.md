@@ -48,4 +48,4 @@ npm run build    # 生产构建
 
 ## 协议
 
-MIT © [wavesnow](LICENSE)
+MIT © [wavesnows](LICENSE)

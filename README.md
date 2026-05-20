@@ -50,4 +50,4 @@ If snowote is useful to you, consider buying me a coffee ☕
 
 ## License
 
-MIT © [wavesnow](LICENSE)
+MIT © [wavesnows](LICENSE)

@@ -69,7 +69,6 @@
     "github-api": "^0.10.7",
     "mark.js": "^8.11.1",
     "markdown-it": "^14.1.1",
-    "node-cron": "^4.2.1",
     "node-pty": "^1.1.0",
     "nodejs-websocket": "^1.7.2",
     "pinia": "^2.0.17",

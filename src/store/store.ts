@@ -129,7 +129,6 @@ export const useTtsStore = defineStore(DFConf.appName, {
       //  store.set("defaultStorePath",this.notestore.currentStore);
         defaultNotePath: store.get("defaultNotePath") || defaultNotebookPath,
         drawer:false,
-        taskManagerVisible: false,
         githubEnable:false,
         githubRepoName:store.get("GithubRepoName") || "",
         githubUsername:store.get("GithubUsername") || "",
@@ -198,10 +197,6 @@ export const useTtsStore = defineStore(DFConf.appName, {
       },
       helpDialog: {
         show: false,
-      },
-      scheduler: {
-        dialogVisible: false,
-        editingTask: null as import('@/types/scheduler').SchedulerTask | null,
       },
       terminal: {
         show: false,

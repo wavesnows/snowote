@@ -8,7 +8,6 @@ import logger from "../utils/log";
 import os from 'os';
 const pty = require('node-pty');
 
-import { initScheduler, schedulerHandleList, schedulerHandleSave, schedulerHandleDeleteAndNotify, schedulerHandleRunNow } from './scheduler'
 
 // Detect if git is available
 function detectGit(): boolean {
@@ -146,7 +145,6 @@ async function createWindow() {
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
     win?.webContents.send("git-available", gitAvailable);
-    if (win) initScheduler(win);
     // Check for updates after UI is ready (production only)
     if (app.isPackaged) {
       setTimeout(() => autoUpdater.checkForUpdates(), 3000);
@@ -387,8 +385,3 @@ autoUpdater.on('error', (err) => {
 ipcMain.handle('updater:download', () => autoUpdater.downloadUpdate());
 ipcMain.handle('updater:install', () => autoUpdater.quitAndInstall(false, true));
 
-// Scheduler IPC handlers
-ipcMain.handle('scheduler:list', () => schedulerHandleList())
-ipcMain.handle('scheduler:save', async (_event, task) => schedulerHandleSave(task))
-ipcMain.handle('scheduler:delete', async (_event, { id }) => schedulerHandleDeleteAndNotify(id))
-ipcMain.handle('scheduler:run-now', (_event, { id }) => schedulerHandleRunNow(id))

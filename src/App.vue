@@ -8,8 +8,8 @@ import HomeMain from "./components/note/HomeMain.vue";
 import Footer from "./components/footer/NoteFooter.vue";
 import HistoryViewer from "./components/history/HistoryViewer.vue";
 import KeyboardShortcuts from "./components/help/KeyboardShortcuts.vue";
-import TaskManager from "./components/TaskManager.vue";
 import TerminalPanel from "./components/terminal/TerminalPanel.vue";
+import { gitPull } from '@/libs/github';
 import { ElNotification, ElButton, ElProgress } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 
@@ -100,6 +100,23 @@ function onUpdateDownloaded() {
   });
 }
 
+const AUTO_PULL_INTERVAL = 30 * 60 * 1000 // 30 分钟
+let autoPullTimer: ReturnType<typeof setInterval> | null = null
+
+function canAutoPull(): boolean {
+  const c = ttsStore.config
+  return ttsStore.gitAvailable &&
+    !!(c.githubUsername || c.giteeUsername) &&
+    !!(c.githubToken || c.giteeToken) &&
+    !!c.githubRepoName
+}
+
+async function runAutoPull() {
+  if (!canAutoPull()) return
+  const ok = await gitPull(t, ttsStore.notebook.currentPath)
+  if (ok) ttsStore.refreshTreeData()
+}
+
 onMounted(() => {
   ttsStore.buildFlatFileList();
   window.addEventListener('keydown', handleKeyDown);
@@ -108,10 +125,15 @@ onMounted(() => {
   // Get git availability from main process
   ipcRenderer.invoke('get-git-available').then((available: boolean) => {
     ttsStore.gitAvailable = available;
+    // 启动后延迟 5 秒自动拉取一次
+    setTimeout(runAutoPull, 5000)
   });
   ipcRenderer.on('git-available', (_: any, available: boolean) => {
     ttsStore.gitAvailable = available;
   });
+
+  // 每 30 分钟自动拉取
+  autoPullTimer = setInterval(runAutoPull, AUTO_PULL_INTERVAL)
 
   ipcRenderer.on('updater:available', onUpdateAvailable);
   ipcRenderer.on('updater:progress', onUpdateProgress);
@@ -123,6 +145,7 @@ onUnmounted(() => {
   window.removeEventListener('focus', handleFocus);
   window.dispatchEvent(new CustomEvent('save-tree-expanded-state'));
   ttsStore.setLastEditNote();
+  if (autoPullTimer) clearInterval(autoPullTimer)
   ipcRenderer.removeListener('updater:available', onUpdateAvailable);
   ipcRenderer.removeListener('updater:progress', onUpdateProgress);
   ipcRenderer.removeListener('updater:downloaded', onUpdateDownloaded);
@@ -147,7 +170,6 @@ onUnmounted(() => {
     <TerminalPanel v-show="ttsStore.terminal.show" />
     <HistoryViewer />
     <KeyboardShortcuts />
-    <TaskManager />
   </div>
 </template>
 

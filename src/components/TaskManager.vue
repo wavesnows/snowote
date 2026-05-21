@@ -163,7 +163,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, reactive, watch, onMounted, onBeforeUnmount, toRaw } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ipcRenderer } from 'electron'
 import { ElMessageBox } from 'element-plus'
@@ -287,14 +287,14 @@ async function saveNew() {
 }
 
 async function toggleEnabled(task: SchedulerTask, enabled: boolean) {
-  const updated = { ...task, enabled }
+  const updated = { ...toRaw(task), enabled }
   await ipcRenderer.invoke('scheduler:save', updated)
   await loadAll()
 }
 
 async function saveEdit(task: SchedulerTask) {
   const updated: SchedulerTask = {
-    ...task,
+    ...toRaw(task),
     name: editForm.name,
     action: editForm.action,
     schedule: editForm.scheduleMode === 'cron'

@@ -9,8 +9,8 @@
     @open="onOpen"
   >
     <div class="tm-body" style="-webkit-app-region: no-drag">
-      <div v-if="!tasks.length" class="tm-empty">{{ t('taskManager.noTasks') }}</div>
-      <div v-else class="tm-list">
+      <div v-if="!tasks.length && !isCreating" class="tm-empty">{{ t('taskManager.noTasks') }}</div>
+      <div class="tm-list">
         <div v-for="task in tasks" :key="task.id" class="tm-row-wrap">
           <!-- 任务行 -->
           <div class="tm-row">
@@ -71,13 +71,13 @@
                 </el-form-item>
                 <el-form-item v-if="editForm.frequency === 'weekly'" :label="t('scheduler.weekday')">
                   <el-select v-model="editForm.weekday" style="width:100%">
-                    <el-option :value="1" label="周一" />
-                    <el-option :value="2" label="周二" />
-                    <el-option :value="3" label="周三" />
-                    <el-option :value="4" label="周四" />
-                    <el-option :value="5" label="周五" />
-                    <el-option :value="6" label="周六" />
-                    <el-option :value="0" label="周日" />
+                    <el-option :value="1" :label="t('scheduler.mon')" />
+                    <el-option :value="2" :label="t('scheduler.tue')" />
+                    <el-option :value="3" :label="t('scheduler.wed')" />
+                    <el-option :value="4" :label="t('scheduler.thu')" />
+                    <el-option :value="5" :label="t('scheduler.fri')" />
+                    <el-option :value="6" :label="t('scheduler.sat')" />
+                    <el-option :value="0" :label="t('scheduler.sun')" />
                   </el-select>
                 </el-form-item>
                 <el-form-item v-if="editForm.frequency === 'monthly'" :label="t('scheduler.dayOfMonth')">
@@ -96,8 +96,69 @@
             </el-form>
           </div>
         </div>
+
+        <!-- 新建任务表单 -->
+        <div v-if="isCreating" class="tm-create-form">
+          <el-form :model="createForm" label-position="top" size="small">
+            <el-form-item :label="t('scheduler.taskName')">
+              <el-input v-model="createForm.name" :placeholder="t('scheduler.taskNamePlaceholder')" />
+            </el-form-item>
+            <el-form-item :label="t('scheduler.action')">
+              <el-select v-model="createForm.action" style="width:100%">
+                <el-option value="git-pull" :label="t('scheduler.gitPull')" />
+                <el-option value="git-push" :label="t('scheduler.gitPush')" />
+                <el-option value="refresh-tree" :label="t('scheduler.refreshTree')" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="t('scheduler.schedule')">
+              <el-radio-group v-model="createForm.scheduleMode" size="small">
+                <el-radio-button value="simple">{{ t('scheduler.simple') }}</el-radio-button>
+                <el-radio-button value="cron">{{ t('scheduler.cron') }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <template v-if="createForm.scheduleMode === 'simple'">
+              <el-form-item :label="t('scheduler.frequency')">
+                <el-select v-model="createForm.frequency" style="width:100%">
+                  <el-option value="daily" :label="t('scheduler.daily')" />
+                  <el-option value="weekly" :label="t('scheduler.weekly')" />
+                  <el-option value="monthly" :label="t('scheduler.monthly')" />
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="t('scheduler.time')">
+                <el-input v-model="createForm.time" placeholder="09:00" style="width:120px" />
+              </el-form-item>
+              <el-form-item v-if="createForm.frequency === 'weekly'" :label="t('scheduler.weekday')">
+                <el-select v-model="createForm.weekday" style="width:100%">
+                  <el-option :value="1" :label="t('scheduler.mon')" />
+                  <el-option :value="2" :label="t('scheduler.tue')" />
+                  <el-option :value="3" :label="t('scheduler.wed')" />
+                  <el-option :value="4" :label="t('scheduler.thu')" />
+                  <el-option :value="5" :label="t('scheduler.fri')" />
+                  <el-option :value="6" :label="t('scheduler.sat')" />
+                  <el-option :value="0" :label="t('scheduler.sun')" />
+                </el-select>
+              </el-form-item>
+              <el-form-item v-if="createForm.frequency === 'monthly'" :label="t('scheduler.dayOfMonth')">
+                <el-input-number v-model="createForm.day" :min="1" :max="28" style="width:120px" />
+              </el-form-item>
+            </template>
+            <el-form-item v-else :label="t('scheduler.cronExpression')">
+              <el-input v-model="createForm.cron" placeholder="0 9 * * *" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" size="small" @click="saveNew">{{ t('common.save') }}</el-button>
+              <el-button size="small" @click="isCreating = false">{{ t('common.cancel') }}</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
       </div>
     </div>
+
+    <template #footer>
+      <el-button type="primary" size="small" @click="startCreate" :disabled="isCreating">
+        + {{ t('scheduler.newTask') }}
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 
@@ -120,6 +181,18 @@ const visible = computed({
 const tasks = ref<SchedulerTask[]>([])
 const runningIds = ref(new Set<string>())
 const editingId = ref<string | null>(null)
+const isCreating = ref(false)
+
+const createForm = reactive({
+  name: '',
+  action: 'git-pull' as 'git-pull' | 'git-push' | 'refresh-tree',
+  scheduleMode: 'simple' as 'simple' | 'cron',
+  frequency: 'daily' as 'daily' | 'weekly' | 'monthly',
+  time: '09:00',
+  weekday: 1,
+  day: 1,
+  cron: '0 9 * * *',
+})
 
 const editForm = reactive({
   name: '',
@@ -179,6 +252,40 @@ function toggleEdit(id: string) {
   editingId.value = id
 }
 
+function startCreate() {
+  editingId.value = null
+  Object.assign(createForm, {
+    name: '', action: 'git-pull', scheduleMode: 'simple',
+    frequency: 'daily', time: '09:00', weekday: 1, day: 1, cron: '0 9 * * *',
+  })
+  isCreating.value = true
+}
+
+async function saveNew() {
+  if (!createForm.name.trim()) return
+  const newTask: SchedulerTask = {
+    id: crypto.randomUUID(),
+    name: createForm.name.trim(),
+    enabled: true,
+    type: 'builtin',
+    action: createForm.action,
+    schedule: createForm.scheduleMode === 'cron'
+      ? { mode: 'cron', cron: createForm.cron }
+      : {
+          mode: 'simple',
+          frequency: createForm.frequency,
+          time: createForm.time,
+          weekday: createForm.weekday,
+          day: createForm.day,
+          cron: simpleToCron({ id: '', name: '', enabled: true, type: 'builtin', retry: { maxAttempts: 3, delaySeconds: 60 }, schedule: { mode: 'simple', frequency: createForm.frequency, time: createForm.time, weekday: createForm.weekday, day: createForm.day } }),
+        },
+    retry: { maxAttempts: 3, delaySeconds: 60 },
+  }
+  await ipcRenderer.invoke('scheduler:save', newTask)
+  isCreating.value = false
+  await loadAll()
+}
+
 async function toggleEnabled(task: SchedulerTask, enabled: boolean) {
   const updated = { ...task, enabled }
   await ipcRenderer.invoke('scheduler:save', updated)
@@ -231,6 +338,7 @@ async function removeTask(task: SchedulerTask) {
 
 function onOpen() {
   editingId.value = null
+  isCreating.value = false
   loadAll()
 }
 
@@ -277,5 +385,11 @@ onBeforeUnmount(() => {
   padding: 12px 12px 4px;
   background: rgba(0,0,0,0.02);
   border-top: 1px solid rgba(0,0,0,0.05);
+}
+.tm-create-form {
+  padding: 12px 12px 4px;
+  background: #f0f7ff;
+  border-top: 1px solid #d0e8ff;
+  border-radius: 0 0 6px 6px;
 }
 </style>

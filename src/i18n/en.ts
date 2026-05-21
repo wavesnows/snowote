@@ -332,6 +332,8 @@ const en = {
       monthly: 'Monthly',
       time: 'Time',
       weekday: 'Weekday',
+      mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu',
+      fri: 'Fri', sat: 'Sat', sun: 'Sun',
       dayOfMonth: 'Day of month',
       cronExpression: 'Cron expression',
       cronInvalid: 'Invalid cron expression',

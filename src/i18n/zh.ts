@@ -332,6 +332,8 @@ const zh = {
       monthly: '每月',
       time: '时间',
       weekday: '星期',
+      mon: '周一', tue: '周二', wed: '周三', thu: '周四',
+      fri: '周五', sat: '周六', sun: '周日',
       dayOfMonth: '日期',
       cronExpression: 'Cron 表达式',
       cronInvalid: 'Cron 表达式无效',

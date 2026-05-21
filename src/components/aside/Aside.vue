@@ -90,7 +90,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 8px;
   }
 
   .home-btn {

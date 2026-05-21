@@ -405,3 +405,54 @@ export async function gitHubPush(t: (key: string) => string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Auto pull with conflict backup:
+ * If local files are modified, save timestamped backups before resetting and pulling.
+ * Returns the list of backed-up file names (empty if no conflicts).
+ */
+export async function autoPull(
+  t: (key: string) => string,
+  repoPath: string = ''
+): Promise<{ success: boolean; backedUp: string[] }> {
+  const ttsStore = useTtsStore();
+
+  if (!repoPath) {
+    const notePath = ttsStore.cnote.lastPath;
+    if (notePath) repoPath = getRepoPath(notePath) || '';
+    if (!repoPath) repoPath = getRepoPath(ttsStore.notebook.currentPath) || ttsStore.notebook.currentPath;
+  }
+
+  if (!repoPath || !fs.existsSync(repoPath)) {
+    return { success: false, backedUp: [] };
+  }
+
+  const git = simpleGit(repoPath);
+  const backedUp: string[] = [];
+
+  try {
+    const status = await git.status();
+    const modified = [...status.modified, ...status.not_added].filter(f => f.endsWith('.json') || f.endsWith('.md'));
+
+    if (modified.length > 0) {
+      const ts = new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '').replace('-', '').replace('-', '')
+      for (const relPath of modified) {
+        const fullPath = path.join(repoPath, relPath)
+        if (!fs.existsSync(fullPath)) continue
+        const ext = path.extname(relPath)
+        const base = relPath.slice(0, relPath.length - ext.length)
+        const backupPath = path.join(repoPath, `${base}_conflict_${ts}${ext}`)
+        fs.copyFileSync(fullPath, backupPath)
+        backedUp.push(path.basename(backupPath))
+      }
+      await git.reset(['--hard', 'HEAD'])
+    }
+
+    await git.pull()
+    ttsStore.refreshTreeData()
+    return { success: true, backedUp }
+  } catch (err: any) {
+    console.error('autoPull failed:', err.message)
+    return { success: false, backedUp }
+  }
+}

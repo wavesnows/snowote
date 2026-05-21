@@ -9,7 +9,7 @@ import Footer from "./components/footer/NoteFooter.vue";
 import HistoryViewer from "./components/history/HistoryViewer.vue";
 import KeyboardShortcuts from "./components/help/KeyboardShortcuts.vue";
 import TerminalPanel from "./components/terminal/TerminalPanel.vue";
-import { gitPull } from '@/libs/github';
+import { autoPull } from '@/libs/github';
 import { ElNotification, ElButton, ElProgress } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 
@@ -113,8 +113,16 @@ function canAutoPull(): boolean {
 
 async function runAutoPull() {
   if (!canAutoPull()) return
-  const ok = await gitPull(t, ttsStore.notebook.currentPath)
-  if (ok) ttsStore.refreshTreeData()
+  const { success, backedUp } = await autoPull(t, ttsStore.notebook.currentPath)
+  if (success && backedUp.length > 0) {
+    ElNotification({
+      title: t('github.conflictBackupTitle'),
+      message: t('github.conflictBackupDesc') + '\n' + backedUp.join('\n'),
+      type: 'warning',
+      duration: 8000,
+      position: 'bottom-right',
+    })
+  }
 }
 
 onMounted(() => {

@@ -163,6 +163,8 @@ const zh = {
       cloneFailed: '克隆仓库失败',
       pullSuccess: '更新拉取成功！',
       pullFailed: '拉取更新失败',
+      conflictBackupTitle: '本地改动已备份',
+      conflictBackupDesc: '拉取前检测到本地未提交的改动，已保存为冲突备份文件：',
       pushSuccess: '更改推送成功！',
       pushFailed: '推送更改失败',
       configMissing: '请先配置同步设置',

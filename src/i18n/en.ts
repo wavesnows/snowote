@@ -163,6 +163,8 @@ const en = {
       cloneFailed: 'Failed to clone repository',
       pullSuccess: 'Updates pulled successfully!',
       pullFailed: 'Failed to pull updates',
+      conflictBackupTitle: 'Local changes backed up',
+      conflictBackupDesc: 'Uncommitted local changes were saved as conflict backups before pulling:',
       pushSuccess: 'Changes pushed successfully!',
       pushFailed: 'Failed to push changes',
       configMissing: 'Please configure Sync settings first',

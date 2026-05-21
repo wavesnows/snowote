@@ -596,11 +596,9 @@
 
 <style scoped>
 .button-container {
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 20px;
 }
 
 .el-button-group {

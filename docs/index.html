@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>snowote · 雪记</title>
+  <meta name="description" content="轻量本地优先笔记应用，支持 Markdown、Git 同步和版本历史。" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #409eff;
+      --text: #303133;
+      --muted: #606266;
+      --border: #e4e7ed;
+      --bg: #f5f7fa;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      background: #fff;
+      line-height: 1.6;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+      padding: 80px 24px 64px;
+      text-align: center;
+    }
+
+    .hero-icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .hero h1 span {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 0.6em;
+      margin-left: 10px;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 32px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(64,158,255,0.35);
+    }
+
+    .btn-primary:hover { background: #2d8cf0; transform: translateY(-1px); }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── Screenshot ── */
+    .screenshot-section {
+      padding: 48px 24px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .screenshot-section img {
+      max-width: 900px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Features ── */
+    .features {
+      background: var(--bg);
+      padding: 64px 24px;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .feature-card .icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Download ── */
+    .download {
+      padding: 64px 24px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .download h2 { font-size: 1.8rem; margin-bottom: 12px; }
+    .download p { color: var(--muted); margin-bottom: 32px; }
+
+    .download-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .download-note {
+      font-size: 0.85rem;
+      color: #c0c4cc;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <span class="hero-icon">❄️</span>
+    <h1>snowote <span>雪记</span></h1>
+    <p>轻量、本地优先的笔记应用。支持 Markdown 与富文本编辑，Git 同步备份，版本历史随时恢复。</p>
+    <div class="hero-actions">
+      <a href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary">
+        ⬇ 下载最新版
+      </a>
+      <a href="https://github.com/wavesnows/snowote" class="btn btn-outline">
+        ⭐ Star on GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- Screenshot -->
+  <section class="screenshot-section">
+    <img src="Screenshot.png" alt="snowote 界面截图" />
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <h2>核心功能</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="icon">📝</span>
+        <h3>双编辑器</h3>
+        <p>富文本编辑器（EditorJS）和 Markdown 编辑器（CodeMirror）随时切换，满足不同写作习惯。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🔄</span>
+        <h3>Git 同步</h3>
+        <p>支持 GitHub 和 Gitee，一键推送/拉取。启动时自动同步，数据永不丢失。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🕐</span>
+        <h3>版本历史</h3>
+        <p>基于 Git 的版本历史，浏览任意提交记录，随时预览并恢复历史版本。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🔍</span>
+        <h3>全文搜索</h3>
+        <p>跨所有笔记即时搜索，快速定位任何内容。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">⌨</span>
+        <h3>内置终端</h3>
+        <p>按 Ctrl+` 唤出终端，自动定位到当前笔记所在目录，无需切换应用。</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🌐</span>
+        <h3>中英双语</h3>
+        <p>界面支持中文和英文切换，适合不同语言习惯的用户。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section class="download">
+    <h2>立即下载</h2>
+    <p>目前支持 macOS，Windows 版本即将推出。</p>
+    <div class="download-btns">
+      <a href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary">
+        🍎 macOS 下载
+      </a>
+      <a href="https://github.com/wavesnows/snowote" class="btn btn-outline">
+        查看源码
+      </a>
+    </div>
+    <p class="download-note">开源免费 · MIT 协议</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://github.com/wavesnows/snowote">GitHub</a>
+      <a href="https://github.com/wavesnows/snowote/releases">Releases</a>
+      <a href="guide.html">文档</a>
+      <a href="https://github.com/wavesnows/snowote/issues">反馈问题</a>
+    </div>
+    <p>MIT © <a href="https://github.com/wavesnows">wavesnows</a> · 用 ❤️ 构建</p>
+  </footer>
+
+</body>
+</html>

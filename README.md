@@ -6,13 +6,15 @@ A lightweight, local-first note-taking app built with Electron and Vue 3. Write 
 
 ---
 
+![snowote](docs/Screenshot.png)
+
 ## Features
 
 - **Dual editor** — Markdown (CodeMirror) or rich text (EditorJS), switch anytime
 - **Git sync** — Push/pull to GitHub or Gitee with one click
 - **Version history** — Browse git commit history, preview and restore any version
 - **Full-text search** — Search across all notes instantly
-- **Scheduler** — Auto git-pull/push on a daily/weekly schedule
+- **Terminal** — Built-in terminal, auto-navigates to current note's directory
 - **Built-in terminal** — Quick access terminal panel (`Ctrl+\``)
 - **Favorites & Recent** — Pin, star, and quickly revisit notes
 - **i18n** — English and Chinese UI

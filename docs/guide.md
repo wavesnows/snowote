@@ -11,6 +11,8 @@
 3. Open **Settings → Notebook**, choose a folder as your notes root directory
 4. Start writing
 
+![snowote welcome screen](./Screenshot.png)
+
 ## Features
 
 - **Dual editor** — Rich text (EditorJS) or Markdown (CodeMirror), switch anytime
@@ -20,7 +22,6 @@
 - **Full-text search** — Search across all notes instantly
 - **Favorites** — Pin and star important notes
 - **Terminal** — Built-in terminal panel, auto-opens to current note's directory
-- **Scheduler** — Auto git-pull/push on a daily/weekly schedule
 
 ## Git Sync Setup
 
@@ -49,6 +50,8 @@
 3. 打开**设置 → 笔记本**，选择一个文件夹作为笔记根目录
 4. 开始写作
 
+![snowote 欢迎页面](./Screenshot.png)
+
 ## 功能特性
 
 - **双编辑器** — 富文本（EditorJS）或 Markdown（CodeMirror），随时切换
@@ -58,7 +61,6 @@
 - **全文搜索** — 跨所有笔记即时搜索
 - **收藏** — 置顶和星标重要笔记
 - **内置终端** — 自动定位到当前笔记所在目录
-- **调度器** — 按日/周自动 git-pull/push
 
 ## Git 同步配置
 

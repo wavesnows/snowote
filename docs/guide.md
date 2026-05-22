@@ -108,4 +108,4 @@ Outputs to `release/{version}/`.
 
 - Electron 24 · Vue 3 · TypeScript · Vite
 - Element Plus · CodeMirror 6 · EditorJS
-- simple-git · node-cron · electron-updater
+- simple-git · electron-updater

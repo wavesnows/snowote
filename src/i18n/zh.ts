@@ -312,6 +312,8 @@ const zh = {
       tip1: '点击左侧文件夹创建新笔记',
       tip2: '使用 Cmd+S 保存，Cmd+F 搜索',
       tip3: '在设置中启用 Git 同步进行备份',
+      terminalTitle: '内置终端',
+      terminalDesc: '随时唤出命令行，自动定位到当前笔记目录',
       footerText: '觉得好用？',
       footerStar: '去 GitHub 点个 Star ⭐',
       donate: '请作者喝咖啡',

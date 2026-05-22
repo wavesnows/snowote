@@ -312,6 +312,8 @@ const en = {
       tip1: 'Click a folder in the left sidebar to create a new note',
       tip2: 'Use Cmd+S to save, Cmd+F to search',
       tip3: 'Enable Git sync in settings for backup',
+      terminalTitle: 'Built-in Terminal',
+      terminalDesc: 'Summon a terminal anytime, auto-navigates to the current note directory',
       footerText: 'Enjoying snowote?',
       footerStar: 'Star it on GitHub ⭐',
       donate: 'Buy me a coffee',

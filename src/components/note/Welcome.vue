@@ -38,7 +38,7 @@
           </div>
         </div>
 
-        <!-- 右列：提示 + 关于 -->
+        <!-- 右列：提示 + 终端亮点 -->
         <div class="right-column">
           <h3 class="section-title">{{ t('welcome.tipsTitle') }}</h3>
           <div class="tips">
@@ -49,6 +49,14 @@
             </ul>
           </div>
 
+          <div class="terminal-card" @click="openTerminal">
+            <div class="terminal-card-icon">⌨</div>
+            <div class="terminal-card-body">
+              <h3>{{ t('welcome.terminalTitle') }}</h3>
+              <p>{{ t('welcome.terminalDesc') }}</p>
+            </div>
+            <kbd class="terminal-shortcut">Ctrl+`</kbd>
+          </div>
         </div>
       </div>
 
@@ -157,6 +165,10 @@ onMounted(async () => {
 
 function openGithub() {
   shell.openExternal('https://github.com/wavesnows/snowote')
+}
+
+function openTerminal() {
+  ttsStore.toggleTerminal()
 }
 </script>
 
@@ -295,6 +307,59 @@ h1 {
 }
 
 .tips li:last-child { margin-bottom: 0; }
+
+.terminal-card {
+  margin-top: 16px;
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.terminal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.terminal-card-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.terminal-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.terminal-card-body h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #cdd6f4;
+  margin: 0 0 4px 0;
+}
+
+.terminal-card-body p {
+  font-size: 12px;
+  color: #6c7086;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.terminal-shortcut {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 12px;
+  color: #a6e3a1;
+  font-family: monospace;
+}
 
 /* 底部 */
 .welcome-footer {

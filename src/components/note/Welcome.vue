@@ -310,7 +310,7 @@ h1 {
 
 .terminal-card {
   margin-top: 16px;
-  background: #1e1e2e;
+  background: white;
   border-radius: 12px;
   padding: 18px 20px;
   display: flex;
@@ -318,12 +318,12 @@ h1 {
   gap: 14px;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .terminal-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .terminal-card-icon {
@@ -339,25 +339,25 @@ h1 {
 .terminal-card-body h3 {
   font-size: 14px;
   font-weight: 600;
-  color: #cdd6f4;
+  color: #303133;
   margin: 0 0 4px 0;
 }
 
 .terminal-card-body p {
   font-size: 12px;
-  color: #6c7086;
+  color: #909399;
   margin: 0;
   line-height: 1.5;
 }
 
 .terminal-shortcut {
   flex-shrink: 0;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: #f5f7fa;
+  border: 1px solid #dcdfe6;
   border-radius: 5px;
   padding: 3px 8px;
   font-size: 12px;
-  color: #a6e3a1;
+  color: #606266;
   font-family: monospace;
 }
 

@@ -310,7 +310,7 @@
   })
   function openGithub() {
     const { shell } = require('electron')
-    shell.openExternal('https://github.com/wavesnows/snowote')
+    shell.openExternal('https://snowote.wavesnows.com')
   }
   const dialogFormVisible = ref(false)
   const addDialogTab = ref('local')

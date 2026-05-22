@@ -164,7 +164,7 @@ onMounted(async () => {
 })
 
 function openGithub() {
-  shell.openExternal('https://github.com/wavesnows/snowote')
+  shell.openExternal('https://snowote.wavesnows.com')
 }
 
 function openTerminal() {

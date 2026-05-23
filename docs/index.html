@@ -261,19 +261,18 @@
   <!-- Download -->
   <section class="download" id="download">
     <h2>立即下载</h2>
-    <p>支持 macOS 和 Windows，选择对应系统版本下载。</p>
+    <p id="dl-version" style="color:var(--muted)">正在获取最新版本...</p>
     <div class="download-btns">
-      <a href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary">
+      <a id="dl-mac-arm64" href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary">
         🍎 macOS Apple Silicon
       </a>
-      <a href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary">
+      <a id="dl-mac-x64" href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary">
         🍎 macOS Intel
       </a>
-      <a href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary" style="background:linear-gradient(135deg,#0078d4,#005a9e)">
+      <a id="dl-win" href="https://github.com/wavesnows/snowote/releases/latest" class="btn btn-primary" style="background:linear-gradient(135deg,#0078d4,#005a9e)">
         🪟 Windows
       </a>
     </div>
-    <p style="font-size:0.85rem;color:#909399;margin-bottom:16px">点击后在 Releases 页面选择对应系统的安装包</p>
     <div class="download-btns" style="margin-top:12px">
       <a href="https://github.com/wavesnows/snowote/releases" class="btn btn-outline">
         所有版本
@@ -284,6 +283,28 @@
     </div>
     <p class="download-note">开源免费 · MIT 协议</p>
   </section>
+
+  <script>
+    fetch('https://api.github.com/repos/wavesnows/snowote/releases/latest')
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('dl-version').textContent =
+          '最新版本：' + data.tag_name + '  ·  支持 macOS 和 Windows';
+        data.assets.forEach(a => {
+          const url = a.browser_download_url;
+          if (a.name.includes('arm64') && a.name.endsWith('.dmg'))
+            document.getElementById('dl-mac-arm64').href = url;
+          else if (a.name.includes('x64') && a.name.endsWith('.dmg'))
+            document.getElementById('dl-mac-x64').href = url;
+          else if (a.name.endsWith('.exe'))
+            document.getElementById('dl-win').href = url;
+        });
+      })
+      .catch(() => {
+        document.getElementById('dl-version').textContent =
+          '支持 macOS 和 Windows';
+      });
+  </script>
 
   <!-- Footer -->
   <footer>

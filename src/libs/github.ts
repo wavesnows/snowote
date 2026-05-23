@@ -108,7 +108,7 @@ export async function addRemoteRepo(
 
   if (repoExists) {
     try {
-      await simpleGit().clone(gitUrl, localPath);
+      await simpleGit().clone(gitUrl, localPath, ['--config', 'credential.helper=']);
       ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
       return true;
     } catch (cloneErr: any) {
@@ -151,7 +151,7 @@ export async function addRemoteRepo(
   await new Promise(resolve => setTimeout(resolve, 2000));
 
   try {
-    await simpleGit().clone(gitUrl, localPath);
+    await simpleGit().clone(gitUrl, localPath, ['--config', 'credential.helper=']);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
     return true;
   } catch (e: any) {
@@ -238,7 +238,7 @@ export async function gitHubClone(t: (key: string) => string, mode: 'multi' | 'd
 
   const git = simpleGit();
   try {
-    await git.clone(gitUrl, localPath);
+    await git.clone(gitUrl, localPath, ['--config', 'credential.helper=']);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
     console.log('Clone finished');
     return true;

@@ -72,7 +72,7 @@
                     class="root-store-item"
                     :class="{ active: storeDir === notestore.currentStore }"
                   >
-                    <span class="root-store-path" :title="storeDir">{{ storeDir.split('/').pop() || storeDir }}</span>
+                    <span class="root-store-path" :title="storeDir">{{ basename(storeDir) }}</span>
                     <div class="root-store-actions">
                       <el-button v-if="storeDir !== notestore.currentStore" size="small" type="primary" link @click="switchRootStore(storeDir)">{{ t('settings.switchStore') }}</el-button>
                       <el-button v-if="notestore.rootStores.length > 1" size="small" type="danger" link @click="removeRootStore(storeDir)">{{ t('settings.removeStore') }}</el-button>
@@ -294,7 +294,7 @@
   import { storeToRefs } from "pinia";
   import { gitPull, gitHubPush, addRemoteRepo, checkRepoExists } from "@/libs/github"
   import fs from 'fs'
-  import { join } from "path";
+  import { join, basename } from "path";
   import { readOneDir } from "@/libs/fileHandler"
   import defaultConf from "@/global/defaultConf";
   import { ipcRenderer } from 'electron';
@@ -449,7 +449,7 @@
     for (const rootDir of ttsStore.notestore.rootStores) {
       const reposPath = join(rootDir, defaultConf.defaultRepoPath);
       const hasRepos = fs.existsSync(reposPath) && fs.statSync(reposPath).isDirectory();
-      const dirName = rootDir.split('/').pop() || rootDir;
+      const dirName = basename(rootDir);
       if (hasRepos) {
         const allNotebooks = readOneDir(reposPath);
         if (allNotebooks.length === 0) continue;
@@ -539,7 +539,7 @@
       ttsStore.setNoteBookConfig();
     }
     ttsStore.refreshTreeData();
-    ElMessage({ message: `已切换到：${dirPath.split('/').pop()}`, type: 'success' });
+    ElMessage({ message: t('settings.rootStoreSwitched', { name: basename(dirPath) }), type: 'success' });
   }
 
   const handleCommand = () => {

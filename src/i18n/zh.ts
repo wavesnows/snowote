@@ -48,6 +48,7 @@ const zh = {
       addRootStore: '+ 添加根目录',
       rootStoreAdded: '根目录已添加',
       rootStoreRemoved: '根目录已移除',
+      rootStoreSwitched: '已切换到：{name}',
       browse: '浏览...',
       saved: '已保存',
       appearanceTab: '外观',

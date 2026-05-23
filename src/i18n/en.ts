@@ -48,6 +48,7 @@ const en = {
       addRootStore: '+ Add Root Directory',
       rootStoreAdded: 'Root directory added',
       rootStoreRemoved: 'Root directory removed',
+      rootStoreSwitched: 'Switched to: {name}',
       browse: 'Browse...',
       saved: 'Saved',
       appearanceTab: 'Appearance',

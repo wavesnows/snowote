@@ -167,6 +167,7 @@ import Quote from '@editorjs/quote';
 import Code from '@editorjs/code';
 import Table from '@editorjs/table';
 import Checklist from '@editorjs/checklist';
+import { basename } from 'path';
 const { ipcRenderer } = require('electron');
 
 const { t } = useI18n();
@@ -183,7 +184,7 @@ const isInGitRepo = computed(() => history.value.isInGitRepo);
 const commits = computed(() => history.value.commits);
 const fileName = computed(() => {
   const path = cnote.value.lastPath;
-  return path ? path.split('/').pop()?.replace('.json', '') : '';
+  return path ? basename(path).replace('.json', '') : '';
 });
 
 const previewVisible = ref(false);

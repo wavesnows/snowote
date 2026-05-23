@@ -48,6 +48,7 @@ import { useTtsStore } from "@/store/store"
 import { StarFilled, Close } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import fs from 'fs'
+import { basename } from 'path'
 
 const { t } = useI18n()
 const ttsStore = useTtsStore()
@@ -61,8 +62,7 @@ const starredNotes = computed(() => {
   starred.forEach((path: string) => {
     // 只显示当前笔记本中的星标笔记
     if (path.startsWith(currentNotebookPath) && fs.existsSync(path)) {
-      const fileName = path.split('/').pop() || ''
-      const label = fileName.replace('.json', '')
+      const label = basename(path).replace('.json', '')
       notes.push({ path, label })
     }
   })

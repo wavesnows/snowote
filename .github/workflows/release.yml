@@ -6,8 +6,26 @@ on:
       - 'v*'
 
 jobs:
-  # ── macOS：同时构建 arm64（Apple Silicon）和 x64（Intel）──
+  # ── 先创建 Release，再并行构建 ──
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create.outputs.upload_url }}
+    steps:
+      - name: Create GitHub Release
+        id: create
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+  # ── macOS：arm64（Apple Silicon）+ x64（Intel）──
   build-mac:
+    needs: create-release
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +51,7 @@ jobs:
 
   # ── Windows：x64 ──
   build-win:
+    needs: create-release
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4

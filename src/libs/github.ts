@@ -117,14 +117,16 @@ export async function addRemoteRepo(
 
   if (repoExists) {
     try {
+      fs.mkdirSync(path.dirname(localPath), { recursive: true });
       await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
       ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
       return true;
     } catch (cloneErr: any) {
       const msg = cloneErr.message || '';
+      console.error('[clone] full error:', cloneErr);
       const alreadyExists = msg.includes('already exists') || msg.includes('destination path');
       ttsStore.setPushStatus(
-        t('github.cloneFailed') + ': ' + (alreadyExists ? t('github.repoAlreadyExists') : msg.split('\n')[0].substring(0, 80)),
+        t('github.cloneFailed') + ': ' + (alreadyExists ? t('github.repoAlreadyExists') : msg.split('\n')[0].substring(0, 120)),
         'error'
       );
       return false;
@@ -160,10 +162,12 @@ export async function addRemoteRepo(
   await new Promise(resolve => setTimeout(resolve, 2000));
 
   try {
+    fs.mkdirSync(path.dirname(localPath), { recursive: true });
     await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
     return true;
   } catch (e: any) {
+    console.error('[clone] full error:', e);
     ttsStore.config.githubRepoName = prevRepo;
     ttsStore.setPushStatus(t('github.cloneFailed') + ': ' + e.message, 'error');
     return false;
@@ -246,12 +250,14 @@ export async function gitHubClone(t: (key: string) => string, mode: 'multi' | 'd
   ttsStore.setPushStatus(t('github.cloning'), 'loading');
 
   try {
+    fs.mkdirSync(path.dirname(localPath), { recursive: true });
     await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
     console.log('Clone finished');
     return true;
   } catch(error: any) {
     const msg = error.message || '';
+    console.error('[clone] full error:', error);
     let friendlyMsg: string;
     if (msg.includes('not found') || msg.includes('Repository not found') || msg.includes('does not exist')) {
       friendlyMsg = t('github.repoNotFound');
@@ -260,7 +266,7 @@ export async function gitHubClone(t: (key: string) => string, mode: 'multi' | 'd
     } else if (msg.includes('already exists')) {
       friendlyMsg = t('github.repoAlreadyExists');
     } else {
-      friendlyMsg = msg.split('\n')[0].substring(0, 80);
+      friendlyMsg = msg.split('\n')[0].substring(0, 120);
     }
     ttsStore.setPushStatus(t('github.cloneFailed') + ': ' + friendlyMsg, 'error');
     console.error('Clone failed:', error);

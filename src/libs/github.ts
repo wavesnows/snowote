@@ -12,13 +12,9 @@ const encode = require('encoding');
 const simpleGit = require('simple-git');
 import axios from 'axios';
 
-// Create a simpleGit instance safe for cloning on all platforms (including Windows)
+// Create a simpleGit instance for cloning
 function makeGitForClone() {
-  return simpleGit({ baseDir: os.homedir() })
-    .env('GIT_TERMINAL_PROMPT', '0')
-    .env('GIT_ASKPASS', 'echo')
-    .env('GCM_INTERACTIVE', 'never')
-    .env('GIT_CONFIG_NOSYSTEM', '1');
+  return simpleGit({ baseDir: os.homedir() });
 }
 const CLONE_OPTS: string[] = [];
 

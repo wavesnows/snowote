@@ -101,7 +101,7 @@ async function createWindow() {
     minWidth: 900,
     minHeight: 600,
 
-    title: "snowote",
+    title: "Snowote",
     icon: join(ROOT_PATH.public, "favicon.ico"),
     // useContentSize: true,
     frame: false,

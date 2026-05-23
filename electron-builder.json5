@@ -18,7 +18,8 @@
     {
       "provider": "github",
       "owner": "wavesnows",
-      "repo": "snowote"
+      "repo": "snowote",
+      "releaseType": "release"
     }
   ],
   "mac": {

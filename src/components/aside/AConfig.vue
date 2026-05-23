@@ -394,8 +394,8 @@
     const repoName = cloneRepoName.value || 'repo-name';
     const root = ttsStore.notestore.currentStore;
     return cloneMode.value === 'multi'
-      ? `${root}/repos/${repoName}`
-      : `${root}/${repoName}`;
+      ? join(root, 'repos', repoName)
+      : join(root, repoName);
   });
 
   async function cloneRepo() {

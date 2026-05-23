@@ -64,7 +64,7 @@
                   </el-button>
                 </div>
               </el-form-item>
-              <el-form-item label="根目录列表">
+              <el-form-item :label="t('settings.rootStoreList')">
                 <div class="root-stores-list">
                   <div
                     v-for="storeDir in notestore.rootStores"
@@ -74,11 +74,11 @@
                   >
                     <span class="root-store-path" :title="storeDir">{{ storeDir.split('/').pop() || storeDir }}</span>
                     <div class="root-store-actions">
-                      <el-button v-if="storeDir !== notestore.currentStore" size="small" type="primary" link @click="switchRootStore(storeDir)">切换</el-button>
-                      <el-button v-if="notestore.rootStores.length > 1" size="small" type="danger" link @click="removeRootStore(storeDir)">移除</el-button>
+                      <el-button v-if="storeDir !== notestore.currentStore" size="small" type="primary" link @click="switchRootStore(storeDir)">{{ t('settings.switchStore') }}</el-button>
+                      <el-button v-if="notestore.rootStores.length > 1" size="small" type="danger" link @click="removeRootStore(storeDir)">{{ t('settings.removeStore') }}</el-button>
                     </div>
                   </div>
-                  <el-button size="small" @click="addRootStore" style="margin-top: 8px;">+ 添加根目录</el-button>
+                  <el-button size="small" @click="addRootStore" style="margin-top: 8px;">{{ t('settings.addRootStore') }}</el-button>
                 </div>
               </el-form-item>
             </el-form>
@@ -519,7 +519,7 @@
       if (paths && paths[0]) {
         ttsStore.addRootStore(paths[0]);
         buildNotebookOptions();
-        ElMessage({ message: '根目录已添加', type: 'success' });
+        ElMessage({ message: t('settings.rootStoreAdded'), type: 'success' });
       }
     });
   }
@@ -527,7 +527,7 @@
   function removeRootStore(dirPath: string) {
     ttsStore.removeRootStore(dirPath);
     buildNotebookOptions();
-    ElMessage({ message: '根目录已移除', type: 'success' });
+    ElMessage({ message: t('settings.rootStoreRemoved'), type: 'success' });
   }
 
   function switchRootStore(dirPath: string) {

@@ -318,9 +318,13 @@
   const dialogCloneRepoName = ref('')
   const dialogCloning = ref(false)
 
-  const canDialogClone = computed(() =>
-    !!(config.value.githubUsername && config.value.githubToken && dialogCloneRepoName.value.trim())
-  )
+  const canDialogClone = computed(() => {
+    const isGitee = config.value.gitProvider === 'gitee'
+    const hasCredentials = isGitee
+      ? !!(config.value.giteeUsername && config.value.giteeToken)
+      : !!(config.value.githubUsername && config.value.githubToken)
+    return hasCredentials && !!dialogCloneRepoName.value.trim()
+  })
 
   async function addGitRepo() {
     if (!canDialogClone.value) return;
@@ -368,9 +372,13 @@
   const cloning = ref(false);
   const repoCheckStatus = ref<'idle' | 'checking' | 'exists' | 'not_found' | 'auth_error'>('idle');
 
-  const canClone = computed(() =>
-    !!(config.value.githubUsername && config.value.githubToken && cloneRepoName.value.trim())
-  );
+  const canClone = computed(() => {
+    const isGitee = config.value.gitProvider === 'gitee'
+    const hasCredentials = isGitee
+      ? !!(config.value.giteeUsername && config.value.giteeToken)
+      : !!(config.value.githubUsername && config.value.githubToken)
+    return hasCredentials && !!cloneRepoName.value.trim()
+  });
 
   function resetRepoCheck() {
     repoCheckStatus.value = 'idle';

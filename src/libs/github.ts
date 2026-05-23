@@ -17,22 +17,25 @@ import axios from 'axios';
 function getProviderConfig(ttsStore: any) {
   const provider = ttsStore.config.gitProvider || 'github';
   if (provider === 'gitee') {
+    const token = ttsStore.config.giteeToken;
     return {
       provider: 'gitee' as const,
       username: ttsStore.config.giteeUsername,
-      token: ttsStore.config.giteeToken,
-      repoUrl: (username: string, repo: string) => `https://gitee.com/${username}/${repo}.git`,
+      token,
+      repoUrl: (username: string, repo: string) => `https://oauth2:${token}@gitee.com/${username}/${repo}.git`,
       apiCheckUrl: (username: string, repo: string) => `https://gitee.com/api/v5/repos/${username}/${repo}`,
       apiCreateUrl: () => 'https://gitee.com/api/v5/user/repos',
       authHeader: (token: string) => ({ 'Content-Type': 'application/json' }),
       authParam: (token: string) => ({ access_token: token }),
     };
   }
+  const githubToken = ttsStore.config.githubToken;
+  const githubUsername = ttsStore.config.githubUsername;
   return {
     provider: 'github' as const,
-    username: ttsStore.config.githubUsername,
-    token: ttsStore.config.githubToken,
-    repoUrl: (username: string, repo: string) => `https://github.com/${username}/${repo}.git`,
+    username: githubUsername,
+    token: githubToken,
+    repoUrl: (_user: string, repo: string) => `https://${githubUsername}:${githubToken}@github.com/${githubUsername}/${repo}.git`,
     apiCheckUrl: (username: string, repo: string) => `https://api.github.com/repos/${username}/${repo}`,
     apiCreateUrl: () => 'https://api.github.com/user/repos',
     authHeader: (token: string) => ({ Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }),

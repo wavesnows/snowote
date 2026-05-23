@@ -14,7 +14,7 @@ import axios from 'axios';
 
 // Create a simpleGit instance safe for cloning on all platforms (including Windows)
 function makeGitForClone() {
-  return simpleGit({ baseDir: os.homedir() })
+  return simpleGit({ baseDir: os.homedir(), allowUnsafeCredentialHelper: true })
     .env('GIT_TERMINAL_PROMPT', '0')
     .env('GIT_ASKPASS', 'echo');
 }

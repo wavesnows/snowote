@@ -5,11 +5,20 @@ import { ErrorType } from '@/libs/errorHandler';
 import { getRepoPath } from '@/libs/gitHistory';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 
 const GitHub = require('github-api');
 const encode = require('encoding');
 const simpleGit = require('simple-git');
 import axios from 'axios';
+
+// Create a simpleGit instance safe for cloning on all platforms (including Windows)
+function makeGitForClone() {
+  return simpleGit({ baseDir: os.homedir() })
+    .env('GIT_TERMINAL_PROMPT', '0')
+    .env('GIT_ASKPASS', 'echo');
+}
+const CLONE_OPTS = ['--config', 'credential.helper='];
 
 /**
  * Add a remote repo: try to clone first, if not found create it then clone.
@@ -108,7 +117,7 @@ export async function addRemoteRepo(
 
   if (repoExists) {
     try {
-      await simpleGit().clone(gitUrl, localPath, ['--config', 'credential.helper=']);
+      await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
       ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
       return true;
     } catch (cloneErr: any) {
@@ -151,7 +160,7 @@ export async function addRemoteRepo(
   await new Promise(resolve => setTimeout(resolve, 2000));
 
   try {
-    await simpleGit().clone(gitUrl, localPath, ['--config', 'credential.helper=']);
+    await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
     return true;
   } catch (e: any) {
@@ -236,9 +245,8 @@ export async function gitHubClone(t: (key: string) => string, mode: 'multi' | 'd
   console.log('Cloning to:', localPath);
   ttsStore.setPushStatus(t('github.cloning'), 'loading');
 
-  const git = simpleGit();
   try {
-    await git.clone(gitUrl, localPath, ['--config', 'credential.helper=']);
+    await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
     console.log('Clone finished');
     return true;

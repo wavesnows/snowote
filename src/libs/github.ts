@@ -18,11 +18,12 @@ function getProviderConfig(ttsStore: any) {
   const provider = ttsStore.config.gitProvider || 'github';
   if (provider === 'gitee') {
     const token = ttsStore.config.giteeToken;
+    const giteeUser = ttsStore.config.giteeUsername;
     return {
       provider: 'gitee' as const,
-      username: ttsStore.config.giteeUsername,
+      username: giteeUser,
       token,
-      repoUrl: (username: string, repo: string) => `https://oauth2:${token}@gitee.com/${username}/${repo}.git`,
+      repoUrl: (_user: string, repo: string) => `https://${giteeUser}:${encodeURIComponent(token)}@gitee.com/${giteeUser}/${repo}.git`,
       apiCheckUrl: (username: string, repo: string) => `https://gitee.com/api/v5/repos/${username}/${repo}`,
       apiCreateUrl: () => 'https://gitee.com/api/v5/user/repos',
       authHeader: (token: string) => ({ 'Content-Type': 'application/json' }),

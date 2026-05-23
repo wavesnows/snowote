@@ -14,11 +14,13 @@ import axios from 'axios';
 
 // Create a simpleGit instance safe for cloning on all platforms (including Windows)
 function makeGitForClone() {
-  return simpleGit({ baseDir: os.homedir(), allowUnsafeCredentialHelper: true })
+  return simpleGit({ baseDir: os.homedir() })
     .env('GIT_TERMINAL_PROMPT', '0')
-    .env('GIT_ASKPASS', 'echo');
+    .env('GIT_ASKPASS', 'echo')
+    .env('GCM_INTERACTIVE', 'never')
+    .env('GIT_CONFIG_NOSYSTEM', '1');
 }
-const CLONE_OPTS = ['--config', 'credential.helper='];
+const CLONE_OPTS: string[] = [];
 
 /**
  * Add a remote repo: try to clone first, if not found create it then clone.

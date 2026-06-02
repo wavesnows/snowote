@@ -22,6 +22,7 @@
       "releaseType": "release"
     }
   ],
+  "afterPack": "scripts/afterPack.js",
   "mac": {
     "icon": "build/icon.icns",
     "category": "public.app-category.productivity",

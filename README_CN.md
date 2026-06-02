@@ -28,7 +28,7 @@
 
 > **macOS 提示：** 应用暂未签名。如果 macOS 提示「已损坏」，在终端执行以下命令后重新打开：
 > ```bash
-> xattr -cr /Applications/snowote.app
+> xattr -cr /Applications/Snowote.app
 > ```
 
 ## 从源码构建

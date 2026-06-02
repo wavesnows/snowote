@@ -1,6 +1,6 @@
 {
   "appId": "com.wavesnow.snowote",
-  "productName": "snowote",
+  "productName": "Snowote",
   "asar": true,
   "npmRebuild": false,
   "directories": {
@@ -47,6 +47,6 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false,
-    "shortcutName": "snowote"
+    "shortcutName": "Snowote"
   }
 }

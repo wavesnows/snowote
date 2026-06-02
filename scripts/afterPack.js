@@ -8,7 +8,7 @@ module.exports = async ({ appOutDir, packager }) => {
 
   const spawnHelper = path.join(
     appOutDir,
-    'snowote.app/Contents/Resources/app.asar.unpacked/node_modules/node-pty/prebuilds',
+    'Snowote.app/Contents/Resources/app.asar.unpacked/node_modules/node-pty/prebuilds',
     process.arch === 'arm64' ? 'darwin-arm64' : 'darwin-x64',
     'spawn-helper'
   );

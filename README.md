@@ -28,7 +28,7 @@ Download the latest installer from [Releases](../../releases):
 
 > **macOS note:** The app is not code-signed. If macOS says the app is damaged, run this in Terminal and try again:
 > ```bash
-> xattr -cr /Applications/snowote.app
+> xattr -cr /Applications/Snowote.app
 > ```
 
 ## Build from Source

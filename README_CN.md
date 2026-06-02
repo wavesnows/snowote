@@ -23,8 +23,13 @@
 
 从 [Releases](../../releases) 下载最新安装包：
 
-- macOS：`snowote_x.x.x.dmg`
+- macOS：`snowote_x.x.x_arm64.dmg`（Apple Silicon）· `snowote_x.x.x_x64.dmg`（Intel）
 - Windows：`snowote_x.x.x.exe`
+
+> **macOS 提示：** 应用暂未签名。如果 macOS 提示「已损坏」，在终端执行以下命令后重新打开：
+> ```bash
+> xattr -cr /Applications/snowote.app
+> ```
 
 ## 从源码构建
 

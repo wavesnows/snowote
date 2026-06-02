@@ -23,8 +23,13 @@ A lightweight, local-first note-taking app built with Electron and Vue 3. Write 
 
 Download the latest installer from [Releases](../../releases):
 
-- macOS: `snowote_x.x.x.dmg`
+- macOS: `snowote_x.x.x_arm64.dmg` (Apple Silicon) · `snowote_x.x.x_x64.dmg` (Intel)
 - Windows: `snowote_x.x.x.exe`
+
+> **macOS note:** The app is not code-signed. If macOS says the app is damaged, run this in Terminal and try again:
+> ```bash
+> xattr -cr /Applications/snowote.app
+> ```
 
 ## Build from Source
 

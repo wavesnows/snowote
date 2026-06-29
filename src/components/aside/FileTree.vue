@@ -306,10 +306,15 @@ var show = ref(false);
 
 const dropdownVisible = ref(false);
 
-// ── 展开状态管理（3 条规则）────────────────────────────────────────
-// 1. 用户展开/折叠 → 更新 store + 写盘，el-tree 自己处理 UI，不需要反向操作
-// 2. 树变可见 / 数据刷新 → 从 store 恢复展开状态
-// 3. 外部跳转（expandTreeToPath）→ 展开新增的 key
+// ── 展开状态管理 ────────────────────────────────────────────────────
+// 用户展开/折叠 → 内存立即更新，磁盘写防抖（避免每次操作同步阻塞主线程）
+// 数据刷新 / 启动  → restoreExpandedState() 从 store 恢复
+
+let _persistTimer: ReturnType<typeof setTimeout> | null = null
+function schedulePersist() {
+  if (_persistTimer) clearTimeout(_persistTimer)
+  _persistTimer = setTimeout(() => ttsStore.persistExpandedKeys(), 600)
+}
 
 function restoreExpandedState() {
   const keys = ttsStore.treeMenu.expandedKeys
@@ -328,16 +333,16 @@ function onNodeExpand(data: Tree) {
   const keys = ttsStore.treeMenu.expandedKeys || []
   if (!keys.includes(data.path)) {
     ttsStore.treeMenu.expandedKeys = [...keys, data.path]
-    ttsStore.persistExpandedKeys()
+    schedulePersist()
   }
 }
 
 function onNodeCollapse(data: Tree) {
   ttsStore.treeMenu.expandedKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
-  ttsStore.persistExpandedKeys()
+  schedulePersist()
 }
 
-// 数据刷新后新节点默认折叠，需要重新恢复
+// 数据刷新后新节点默认折叠，重新恢复展开状态
 watch(() => ttsStore.treeMenu.data, () => {
   focusedNodeKey.value = null
   restoreExpandedState()

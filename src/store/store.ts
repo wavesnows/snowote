@@ -223,6 +223,11 @@ export const useTtsStore = defineStore(DFConf.appName, {
         store.set('expandedKeys', this.treeMenu.expandedKeys);
       }
     },
+    persistExpandedKeys() {
+      if (this.treeMenu.expandedKeys) {
+        store.set('expandedKeys', this.treeMenu.expandedKeys);
+      }
+    },
     setSavePath() {
       store.set("savePath", this.config.savePath);
       store.set("defaultStorePath",this.notestore.currentStore);

@@ -1,6 +1,10 @@
 <template>
   <div class="aside" :style="{ width: width + 'px' }">
-    <FileTree v-if="ttsStore.page.asideIndex == '1'"/>
+    <!-- FileTree 多根节点，需套 wrapper 使 v-show 完整生效 -->
+    <div v-show="ttsStore.page.asideIndex == '1'" class="panel-wrap">
+      <FileTree/>
+    </div>
+    <!-- 纯展示、无副作用，按需创建即可 -->
     <Favorites v-if="ttsStore.page.asideIndex == '2'"/>
     <RecentFiles v-if="ttsStore.page.asideIndex == '3'"/>
     <Lan v-if="ttsStore.page.asideIndex == '5'"/>
@@ -61,6 +65,14 @@ function stopDrag() {
   justify-content: space-between;
   position: relative;
   flex-shrink: 0;
+}
+
+.panel-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .resize-handle {

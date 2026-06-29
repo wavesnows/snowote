@@ -20,6 +20,8 @@
       :filter-node-method="filterNode"
       @node-contextmenu="showItemMenu "
       :default-expanded-keys="expandedKeys"
+      @node-expand="onNodeExpand"
+      @node-collapse="onNodeCollapse"
       ref="treeRef"
     >
     <template #default="{ node, data }">
@@ -325,7 +327,24 @@ function saveExpandedState() {
     expandedKeys.value = expanded;
     // Also save to store so refreshTreeData can preserve it
     ttsStore.treeMenu.expandedKeys = expanded;
+    // Persist to disk immediately
+    ttsStore.persistExpandedKeys();
   }
+}
+
+// Directly add/remove key on expand/collapse — avoids traversal-timing issues
+// that would cause setDefaultExpandedKeys to re-expand a just-collapsed node.
+function onNodeExpand(data: Tree) {
+  const keys = ttsStore.treeMenu.expandedKeys || []
+  if (!keys.includes(data.path)) {
+    ttsStore.treeMenu.expandedKeys = [...keys, data.path]
+    ttsStore.persistExpandedKeys()
+  }
+}
+
+function onNodeCollapse(data: Tree) {
+  ttsStore.treeMenu.expandedKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
+  ttsStore.persistExpandedKeys()
 }
 
 // Restore expanded state after tree data refresh
@@ -457,14 +476,23 @@ watch(filterText, (val) => {
   treeRef.value!.filter(val)
 })
 
-// Watch for expandedKeys changes from store (e.g., from breadcrumb clicks)
+// Watch for expandedKeys changes from store (e.g., from expandTreeToPath).
+// Only expand NEWLY added keys — never re-expand a just-collapsed node.
 watch(
   () => ttsStore.treeMenu.expandedKeys,
-  (newKeys) => {
-    if (newKeys && newKeys.length > 0) {
-      expandedKeys.value = newKeys;
-      console.log('Tree expanding to keys:', newKeys);
-    }
+  (newKeys, oldKeys) => {
+    if (!newKeys || newKeys.length === 0) return
+    const oldSet = new Set(oldKeys || [])
+    const added = newKeys.filter(k => !oldSet.has(k))
+    if (added.length === 0) return
+    nextTick(() => {
+      added.forEach(key => {
+        try {
+          const node = treeRef.value?.getNode(key)
+          if (node) node.expand()
+        } catch (_) {}
+      })
+    })
   }
 )
 

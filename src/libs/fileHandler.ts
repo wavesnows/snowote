@@ -5,6 +5,7 @@ import { useTtsStore, editorInstance,Tree } from "@/store/store";
 import Node from 'element-plus/es/components/tree/src/model/node'
 import {updateTreeMenu} from "@/libs/treeMenu"
 import {showMessage} from '@/libs/globalLib'
+import { log, dir } from '@/libs/logger'
 
   export function renameFile(): boolean {
     //  saveContent(editor,ttsStore);
@@ -13,8 +14,8 @@ import {showMessage} from '@/libs/globalLib'
     var destPath = path.dirname(ttsStore.inputs.notePath)
     const ext = path.extname(ttsStore.inputs.notePath) || '.json'
     var destPath = path.join(destPath, ttsStore.cnote.destTitle + ext)
-    //console.log(destPath)
-    //console.log(ttsStore.inputs.notePath)
+    //log(destPath)
+    //log(ttsStore.inputs.notePath)
     if(ttsStore.inputs.notePath != destPath){
       const oldPath = ttsStore.inputs.notePath;
 
@@ -52,12 +53,12 @@ import {showMessage} from '@/libs/globalLib'
 
   export function removeFolder() {
     let ttsStore = useTtsStore()
-    console.log("remove Folder")
+    log("remove Folder")
     let node  = ttsStore.treeMenu.node ;
   //  updateTreeMenu()
     updateTreeMenu()
     ttsStore.inputs.notePath =  node.data.path
-    console.log("----"+node.data.path)
+    log("----"+node.data.path)
     try {
       fs.rmSync(node.data.path, { recursive: true, force: true })
       showMessage('Remove success!', 'success')
@@ -132,7 +133,7 @@ function readDirGeneric(dirPath: string, options: {
   customMapper?: (file: string, fullPath: string, isDirectory: boolean) => any
 }): any[] {
   if (options.checkExists && !fs.existsSync(dirPath)) {
-    console.log("file path is empty")
+    log("file path is empty")
     return []
   }
 
@@ -181,13 +182,13 @@ export function readDir(dir: string = ''): any {
   if (dir == '') {
     const ttsStore = useTtsStore()
     dirPath = path.join(ttsStore.settings.currentStore, 'repos', ttsStore.config.githubRepoName, 'notes')
-    console.log(dirPath)
+    log(dirPath)
   }
   return readDirGeneric(dirPath, { recursive: true, includeJson: true })
 }
 
 export function readOneDir(dir: string = ''): Array<any> {
-  console.log('readOneDir called with dir:', dir);
+  log('readOneDir called with dir:', dir);
 
   const result = readDirGeneric(dir, {
     dirsOnly: true,
@@ -198,7 +199,7 @@ export function readOneDir(dir: string = ''): Array<any> {
         const gitPath = path.join(fullPath, '.git');
         const isGitRepo = fs.existsSync(gitPath);
 
-        console.log(`Checking notebook: ${file}, path: ${fullPath}, isGitRepo: ${isGitRepo}`);
+        log(`Checking notebook: ${file}, path: ${fullPath}, isGitRepo: ${isGitRepo}`);
 
         return {
           label: file,
@@ -211,7 +212,7 @@ export function readOneDir(dir: string = ''): Array<any> {
     }
   });
 
-  console.log('readOneDir result:', result);
+  log('readOneDir result:', result);
   return result;
 }
 
@@ -254,9 +255,9 @@ export function readNotes(dirPath: string, pinnedPaths?: string[], showHidden = 
 
 export function addHandler(){
   const ttsStore = useTtsStore();
-  console.log("add")
+  log("add")
   let data = ttsStore.inputs.itemData
-  console.dir(data)
+  dir(data)
   let label:string = getNoteLabel();
   let filePath:any = path.join(data.path,label+'.json')
   const newChild:Tree = {label: label, isFolder:false, path: filePath, isLeaf: true}

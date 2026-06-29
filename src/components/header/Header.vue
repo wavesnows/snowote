@@ -81,6 +81,7 @@ import { useTtsStore } from "@/store/store";
 import { ElMessage } from 'element-plus';
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useI18n } from 'vue-i18n';
+import { log } from '@/libs/logger'
 
 const { ipcRenderer } = require("electron");
 const { shell } = require("electron");
@@ -97,7 +98,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
     // Only trigger if there are changes to push
     const hasChanges = ttsStore.gitStatus.hasUnpushed || ttsStore.gitStatus.hasUncommitted;
     if (!hasChanges) {
-      console.log('No changes to push, ignoring shortcut');
+      log('No changes to push, ignoring shortcut');
       return;
     }
 

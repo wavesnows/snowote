@@ -1,8 +1,9 @@
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import { useTtsStore, Tree } from "@/store/store";
+import { log } from '@/libs/logger'
 
 export function updateTreeMenu(){
-    console.log("update Tree")
+    log("update Tree")
     const ttsStore = useTtsStore();
     let treedata:Tree = ttsStore.treeMenu.treeData;
     let node:Node = ttsStore.treeMenu.node;

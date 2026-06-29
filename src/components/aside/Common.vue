@@ -48,10 +48,10 @@ const cities = [
 ]
 
 function saveHander(value:any){
-  console.log(value )
+  log(value )
   /*ttsStore.notebook.current = value.value;
   ttsStore.notebook.currentPath = join(ttsStore.config.savePath,"repos",ttsStore.notebook.current)
-  console.log(ttsStore.notebook.currentPath)
+  log(ttsStore.notebook.currentPath)
   ttsStore.setNoteBookConfig();
   ttsStore.treeMenu.data = readNotes(ttsStore.notebook.currentPath) // reload file
   */
@@ -84,6 +84,7 @@ function saveHander(value:any){
   import { useTtsStore} from "@/store/store"
   import { readDir,readNotes} from "@/libs/fileHandler"
   import {join} from 'path'
+import { log } from '@/libs/logger'
 
   const ttsStore = useTtsStore();
   const value = ref(ttsStore.notebook.current)

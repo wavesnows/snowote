@@ -50,6 +50,7 @@ import {saveContent} from '@/libs/editor'
 import {ElMessageBox, ElMessage} from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { Clock, View, EditPen, CopyDocument, Minus } from '@element-plus/icons-vue'
+import { log } from '@/libs/logger'
 //import {  DocumentAdd } from "@element-plus/icons-vue";
 
 //const currShow = ref(0);
@@ -70,13 +71,13 @@ function copyAll() {
 
 
 function saveHandle(){
-    console.log("Save Btn")
+    log("Save Btn")
     //editerflag.value = true
     saveContent()
 };
 
 function editHandle(){
-  console.log("Edit Press")
+  log("Edit Press")
   let v =ttsStore.readOnly
   readOnly.value = !v;
 }
@@ -97,7 +98,7 @@ async function removeHandle(){
   .catch(() => {
       // catch error
     })
-  console.log("Remove Press")
+  log("Remove Press")
 }
 
 function openHistory() {

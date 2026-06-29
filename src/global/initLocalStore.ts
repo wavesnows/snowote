@@ -3,6 +3,7 @@ import {initDefaultNotebook} from "@/libs/noteUtil"
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import { warn } from '@/libs/logger'
 
 const Store = require('electron-store');
 export const store = new Store();
@@ -38,7 +39,7 @@ export default function initStore() {
     // If stored path no longer exists, reset to default
     const stored = store.get("currentNotebookPath") as string;
     if (stored && !fs.existsSync(stored)) {
-      console.warn('currentNotebookPath not found, resetting to default:', stored);
+      warn('currentNotebookPath not found, resetting to default:', stored);
       store.set("currentNotebookPath", defaultNotebookPath);
     }
   }

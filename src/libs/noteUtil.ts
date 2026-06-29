@@ -1,6 +1,7 @@
 
 import path from "path";
 import defaultConf from '../global/defaultConf';
+import { log } from '@/libs/logger'
 
 // Lazy load fs-extra only when needed (not in renderer process)
 let fse: any = null;
@@ -73,7 +74,7 @@ export function initDefaultNotebook(dir:string):string{
     else{
         str ="none empty";
     }
-    console.log(str)
+    log(str)
     return str;
 
 }

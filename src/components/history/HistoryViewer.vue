@@ -168,6 +168,7 @@ import Code from '@editorjs/code';
 import Table from '@editorjs/table';
 import Checklist from '@editorjs/checklist';
 import { basename } from 'path';
+import { log } from '@/libs/logger'
 const { ipcRenderer } = require('electron');
 
 const { t } = useI18n();
@@ -280,16 +281,16 @@ function shortHash(hash: string): string {
 
 // Preview commit
 async function previewCommit(commit: any) {
-  console.log('Preview button clicked for commit:', commit.hash);
+  log('Preview button clicked for commit:', commit.hash);
   selectedCommit.value = commit;
   previewVisible.value = true;
   previewLoading.value = true;
   previewError.value = false;
 
   try {
-    console.log('Calling ttsStore.previewCommit...');
+    log('Calling ttsStore.previewCommit...');
     await ttsStore.previewCommit(commit);
-    console.log('Preview data loaded successfully');
+    log('Preview data loaded successfully');
     previewLoading.value = false;
   } catch (error: any) {
     console.error('Preview error:', error);
@@ -301,26 +302,26 @@ async function previewCommit(commit: any) {
 
 // Initialize editor when dialog is fully opened
 async function onDialogOpened() {
-  console.log('Dialog opened, initializing editor...');
-  console.log('Preview data available:', !!history.value.previewData);
-  console.log('Preview error state:', previewError.value);
-  console.log('Preview loading state:', previewLoading.value);
+  log('Dialog opened, initializing editor...');
+  log('Preview data available:', !!history.value.previewData);
+  log('Preview error state:', previewError.value);
+  log('Preview loading state:', previewLoading.value);
 
   // If there's an error or still loading, don't initialize editor
   if (previewError.value || previewLoading.value) {
-    console.log('Skipping editor init - error or loading');
+    log('Skipping editor init - error or loading');
     return;
   }
 
   // If no preview data, don't initialize
   if (!history.value.previewData) {
-    console.log('No preview data available');
+    log('No preview data available');
     return;
   }
 
   // If empty file (no blocks), don't initialize editor - just show empty state
   if (!history.value.previewData.blocks || history.value.previewData.blocks.length === 0) {
-    console.log('File is empty, showing empty state');
+    log('File is empty, showing empty state');
     return;
   }
 
@@ -328,9 +329,9 @@ async function onDialogOpened() {
   if (previewEditorInstance) {
     try {
       await previewEditorInstance.destroy();
-      console.log('Destroyed previous editor instance');
+      log('Destroyed previous editor instance');
     } catch (e) {
-      console.log('Error destroying editor:', e);
+      log('Error destroying editor:', e);
     }
     previewEditorInstance = null;
   }
@@ -350,7 +351,7 @@ async function onDialogOpened() {
     // Ensure data has correct EditorJS format
     const editorData = history.value.previewData;
 
-    console.log('Initializing editor with data:', {
+    log('Initializing editor with data:', {
       time: editorData.time,
       blocksCount: editorData.blocks?.length || 0,
       version: editorData.version
@@ -405,7 +406,7 @@ async function onDialogOpened() {
 
     // Wait for editor to be ready
     await previewEditorInstance.isReady;
-    console.log('✅ Preview editor ready! Blocks count:', editorData.blocks?.length || 0);
+    log('✅ Preview editor ready! Blocks count:', editorData.blocks?.length || 0);
   } catch (error: any) {
     console.error('❌ Editor initialization error:', error);
     console.error('Error message:', error?.message);
@@ -461,7 +462,7 @@ watch(previewVisible, async (newVal) => {
     try {
       await previewEditorInstance.destroy();
     } catch (e) {
-      console.log('Error destroying editor on close:', e);
+      log('Error destroying editor on close:', e);
     }
     previewEditorInstance = null;
   }

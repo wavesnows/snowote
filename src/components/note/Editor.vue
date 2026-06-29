@@ -9,6 +9,7 @@ import {ref, onMounted, onUnmounted, watch} from 'vue'
 import EditorJS from "@editorjs/editorjs";
 import { useTtsStore } from "@/store/store";
 import { initEditor, saveContent} from "@/libs/editor";
+import { log } from '@/libs/logger'
 
 const ttsStore = useTtsStore();
 const editor = ref<HTMLElement | null>(null);
@@ -25,16 +26,16 @@ watch(
 
 watch(
   () => ttsStore.editerData, async (newv,oldv) => {
-    console.log('value change', 'blocks:', newv?.blocks?.length)
+    log('value change', 'blocks:', newv?.blocks?.length)
     if (editorInstance && newv && newv.blocks !== undefined) {
       try {
         // For empty blocks, use clear instead of render to avoid errors
         if (newv.blocks.length === 0) {
-          console.log('Empty blocks - using clear()')
+          log('Empty blocks - using clear()')
           await editorInstance.isReady
           await editorInstance.clear()
         } else {
-          console.log('Non-empty blocks - using render()')
+          log('Non-empty blocks - using render()')
           await editorInstance.isReady
           await editorInstance.render(newv)
         }

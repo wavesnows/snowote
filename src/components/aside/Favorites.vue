@@ -49,6 +49,7 @@ import { StarFilled, Close } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import fs from 'fs'
 import { basename } from 'path'
+import { log } from '@/libs/logger'
 
 const { t } = useI18n()
 const ttsStore = useTtsStore()
@@ -88,7 +89,7 @@ const openNote = (note: {path: string, label: string}) => {
 
       data = data.trim().replace('\n', '')
       if (data === "") {
-        console.log('empty file')
+        log('empty file')
         if (ttsStore.editorInstance) {
           ttsStore.editorInstance.clear()
         }

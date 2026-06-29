@@ -1,5 +1,6 @@
 import util from 'util';
 import { exec } from 'child_process';
+import { log } from '@/libs/logger'
 
 const execPromise = util.promisify(exec);
 
@@ -7,7 +8,7 @@ async function runCommandInRenderer(command:any) {
     try {
       // 在渲染进程中执行命令并返回结果
       const { stdout, stderr } = await execPromise(command);
-      console.log(stdout, stderr);
+      log(stdout, stderr);
   
       // 在页面上展示结果
       const resultElement = document.getElementById('result');
@@ -34,7 +35,7 @@ async function runCommandInRenderer(command:any) {
     try {
     // 在渲染进程中执行命令并返回结果
     const { stdout, stderr } = await execPromise(command);
-    console.log(stdout, stderr);
+    log(stdout, stderr);
     res.code = 0;
     res.result = stdout
 

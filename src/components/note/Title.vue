@@ -24,6 +24,7 @@ import { storeToRefs } from "pinia";
 import { Edit,Check } from "@element-plus/icons-vue";
 import { ref, Ref } from 'vue';
 import {renameFile} from '@/libs/fileHandler'
+import { log } from '@/libs/logger'
 
 const ttsStore = useTtsStore();
 var {cnote} = storeToRefs(ttsStore);
@@ -31,7 +32,7 @@ var {cnote} = storeToRefs(ttsStore);
 const myInput:Ref<typeof ElInput | null> = ref(null)
 
 const changeHandler = () =>{
-    console.log("content change")
+    log("content change")
 }
 
 const editShow = () =>{
@@ -40,7 +41,7 @@ const editShow = () =>{
 }
 
 const okHandler = () =>{
-    console.log("OK")
+    log("OK")
     // Only rename if title actually changed
     if (ttsStore.cnote.destTitle !== ttsStore.cnote.title) {
         const ok = renameFile()
@@ -54,7 +55,7 @@ const okHandler = () =>{
 }
 
 const goBack = () => {
-    console.log('go back')
+    log('go back')
     ElMessage({
     message: 'this is a message.',
     grouping: true,

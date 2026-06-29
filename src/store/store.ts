@@ -14,6 +14,7 @@ import { ipcRenderer } from 'electron';
 import { getFileHistory, getFileContentAtCommit, restoreFileToCommit, isFileInGitRepo, getRepoPath, getGitStatus } from '@/libs/gitHistory';
 import { ElMessage } from 'element-plus';
 import { errorHandler } from '@/libs/errorHandler';
+import { log } from '@/libs/logger'
 export interface Tree {
   label: string
   isLeaf:boolean
@@ -431,7 +432,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
 
       // Schedule refresh after debounce period
       this.treeRefresh.timeout = setTimeout(() => {
-        console.log('Refreshing tree data (debounced)...');
+        log('Refreshing tree data (debounced)...');
         this.refreshTreeData();
       }, this.treeRefresh.debounceMs);
     },
@@ -502,16 +503,16 @@ export const useTtsStore = defineStore(DFConf.appName, {
         throw new Error('Repository path not found');
       }
 
-      console.log('Previewing commit:', commit.hash, 'for file:', filePath);
+      log('Previewing commit:', commit.hash, 'for file:', filePath);
 
       try {
         const content = await getFileContentAtCommit(filePath, repoPath, commit.hash);
-        console.log('Got content:', content !== null ? `length: ${content.length}` : 'null');
+        log('Got content:', content !== null ? `length: ${content.length}` : 'null');
 
         if (content !== null) {
           // Handle empty file
           if (content.length === 0 || content.trim().length === 0) {
-            console.log('File is empty in this commit');
+            log('File is empty in this commit');
             this.history.previewData = {
               time: Date.now(),
               blocks: [],
@@ -524,7 +525,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
             this.history.selectedCommit = commit;
           } else {
             const parsed = JSON.parse(content);
-            console.log('Parsed data:', parsed);
+            log('Parsed data:', parsed);
             this.history.previewData = parsed;
             this.history.selectedCommit = commit;
           }
@@ -700,7 +701,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
       if (this.autoSave.enabled) {
         this.autoSave.timer = setInterval(() => {
           if (this.autoSave.hasUnsavedChanges && this.cnote.lastPath) {
-            console.log('Auto-saving...');
+            log('Auto-saving...');
             // Trigger save through editor
             const saveEvent = new CustomEvent('auto-save');
             window.dispatchEvent(saveEvent);
@@ -780,7 +781,7 @@ export const useTtsStore = defineStore(DFConf.appName, {
       // Update expanded keys
       this.treeMenu.expandedKeys = expandKeys;
 
-      console.log('Expanding tree to path:', targetPath, 'Keys:', expandKeys);
+      log('Expanding tree to path:', targetPath, 'Keys:', expandKeys);
     },
 
     setMdTheme(theme: string) {

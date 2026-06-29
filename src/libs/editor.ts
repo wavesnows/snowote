@@ -14,6 +14,7 @@ import { showMessage } from '@/libs/globalLib';
 import { showError, ErrorType } from '@/libs/errorHandler';
 import path from 'path';
 import fs from 'fs';
+import { log, dir } from '@/libs/logger'
 let editorInstance: EditorJS
 
 export function initEditor(holder: HTMLElement){
@@ -67,11 +68,11 @@ export function initEditor(holder: HTMLElement){
         data:store.get("editerData"),
         placeholder: 'Let`s write an awesome story!',
         onChange: (api, event) => {
-         console.log('Now I know that Editor\'s content changed!', api, event)
+         log('Now I know that Editor\'s content changed!', api, event)
          saveContent()
        },
         onReady: () =>{
-          console.log('ready!');
+          log('ready!');
           readyInit();
          
         }
@@ -80,11 +81,11 @@ export function initEditor(holder: HTMLElement){
 }
 
 export function readyInit(){
-    console.log("call by init");
+    log("call by init");
     if(editorInstance){
-      console.log("has instance");
+      log("has instance");
       editorInstance.on('selection-change', (event) => {
-        console.log(`当前选定的内容：${event.detail.range.toString()}`);
+        log(`当前选定的内容：${event.detail.range.toString()}`);
       });
     }
     loadContent()
@@ -96,7 +97,7 @@ export function loadContent(){
     try {
       const data = fs.readFileSync(url, 'utf8');
       const jsonData = JSON.parse(data);
-      console.log(jsonData);
+      log(jsonData);
     } catch (err) {
       console.error('Error loading content:', err);
       showMessage('Failed to load content', 'error');
@@ -105,7 +106,7 @@ export function loadContent(){
     const ttsStore = useTtsStore();
     ttsStore.cnote.title = '';
     ttsStore.cnote.lastPath = '';
-    console.log("no current file.");
+    log("no current file.");
   }
 }
 
@@ -117,7 +118,7 @@ export function saveContent(){
 
   editorInstance.save().then((outputData:any) => {
     ttsStore.editerflag = false
-      console.dir(outputData,{depth:5})
+      dir(outputData,{depth:5})
       var fileData = JSON.stringify(outputData, null, 2); // 以 2 个空格缩进 JSON 数据
           var data = new Date();
           var title = data.getTime().toString();
@@ -125,9 +126,9 @@ export function saveContent(){
           if(ttsStore.inputs.noteTitle !=""){
             title = ttsStore.inputs.noteTitle;
           }
-         console.log(title, ttsStore.inputs.notePath)
+         log(title, ttsStore.inputs.notePath)
           fs.writeFileSync(ttsStore.inputs.notePath, fileData, 'utf8')
-          console.log('Saving Finish');
+          log('Saving Finish');
 
           // Set saved status
           ttsStore.setSaveStatus('saved', ttsStore.config.language === 'zh_CN' ? '已保存' : 'Saved');
@@ -139,7 +140,7 @@ export function saveContent(){
       ttsStore.setSaveStatus('error', ttsStore.config.language === 'zh_CN' ? '保存失败' : 'Save failed');
       // Use unified error handler
       showError(ErrorType.FILE_WRITE, 'Failed to save note', error.message, error);
-      console.log('Saving failed: ', error)
+      log('Saving failed: ', error)
       ttsStore.editerflag = false
       });
   }

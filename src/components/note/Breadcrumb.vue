@@ -24,6 +24,7 @@ import { useTtsStore } from '@/store/store';
 import { storeToRefs } from 'pinia';
 import { Folder } from '@element-plus/icons-vue';
 import path from 'path';
+import { log } from '@/libs/logger'
 
 const ttsStore = useTtsStore();
 const { cnote, notebook } = storeToRefs(ttsStore);
@@ -77,7 +78,7 @@ const breadcrumbs = computed(() => {
 function handleBreadcrumbClick(item: any, index: number) {
   // Only allow clicking on folders (not the current file)
   if (index < breadcrumbs.value.length - 1 && item.isFolder) {
-    console.log('Navigate to folder:', item.path);
+    log('Navigate to folder:', item.path);
     // Expand tree to show this folder
     ttsStore.expandTreeToPath(item.path);
   }

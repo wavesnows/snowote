@@ -11,6 +11,7 @@ const GitHub = require('github-api');
 const encode = require('encoding');
 const simpleGit = require('simple-git');
 import axios from 'axios';
+import { log } from '@/libs/logger'
 
 // Create a simpleGit instance for cloning
 function makeGitForClone() {
@@ -244,14 +245,14 @@ export async function gitHubClone(t: (key: string) => string, mode: 'multi' | 'd
     ? path.join(root, "repos", repo)
     : path.join(root, repo);
 
-  console.log('Cloning to:', localPath);
+  log('Cloning to:', localPath);
   ttsStore.setPushStatus(t('github.cloning'), 'loading');
 
   try {
     fs.mkdirSync(path.dirname(localPath), { recursive: true });
     await makeGitForClone().clone(gitUrl, localPath, CLONE_OPTS);
     ttsStore.setPushStatus(t('github.cloneSuccess'), 'success');
-    console.log('Clone finished');
+    log('Clone finished');
     return true;
   } catch(error: any) {
     const msg = error.message || '';
@@ -303,13 +304,13 @@ export async function gitPull(t: (key: string) => string, loclRepo: string = '')
     return false;
   }
 
-  console.log('Pulling from:', loclRepo);
+  log('Pulling from:', loclRepo);
   ttsStore.setPushStatus(t('github.pulling'), 'loading');
 
   const git = simpleGit(loclRepo);
   try {
     const update = await git.pull();
-    console.log('Repo updated:', update);
+    log('Repo updated:', update);
     ttsStore.setPushStatus(t('github.pullSuccess'), 'success');
     return true;
   } catch (err: any) {
@@ -362,7 +363,7 @@ export async function gitHubPush(t: (key: string) => string): Promise<boolean> {
     return false;
   }
 
-  console.log('Pushing from:', repoDir);
+  log('Pushing from:', repoDir);
   ttsStore.setPushStatus(t('github.pushing'), 'loading');
 
   const git = simpleGit(repoDir);
@@ -381,14 +382,14 @@ export async function gitHubPush(t: (key: string) => string): Promise<boolean> {
     if (status.ahead > 0 || status.files.length > 0) {
       const branch = (await git.revparse(['--abbrev-ref', 'HEAD'])).trim();
       await git.push(['-u', 'origin', branch]);
-      console.log('Push succeeded');
+      log('Push succeeded');
       ttsStore.setPushStatus(t('github.pushSuccess'), 'success');
 
       // Schedule git status check after successful push
       ttsStore.scheduleGitStatusCheck();
       return true;
     } else {
-      console.log('Nothing to push');
+      log('Nothing to push');
       ttsStore.setPushStatus(t('git.upToDate'), 'success');
 
       // Still check status to make sure indicator is updated

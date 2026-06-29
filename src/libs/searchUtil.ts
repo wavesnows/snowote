@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { warn } from '@/libs/logger'
 
 export interface SearchResult {
   filePath: string;
@@ -137,7 +138,7 @@ function searchFile(filePath: string, query: string): SearchResult[] {
 
     // Check for Git merge conflict markers
     if (fileContent.includes('<<<<<<<') || fileContent.includes('>>>>>>>') || fileContent.includes('=======')) {
-      console.warn(`File ${filePath} contains unresolved Git merge conflicts, skipping`);
+      warn(`File ${filePath} contains unresolved Git merge conflicts, skipping`);
       return results;
     }
 
@@ -145,7 +146,7 @@ function searchFile(filePath: string, query: string): SearchResult[] {
 
     // Validate EditorJS data structure
     if (!jsonData || !jsonData.blocks || !Array.isArray(jsonData.blocks)) {
-      console.warn(`Invalid EditorJS format in file ${filePath}, skipping`);
+      warn(`Invalid EditorJS format in file ${filePath}, skipping`);
       return results;
     }
 
@@ -171,7 +172,7 @@ function searchFile(filePath: string, query: string): SearchResult[] {
     // Silently skip files with JSON parse errors or read errors
     // Only log in development mode
     if (process.env.NODE_ENV === 'development') {
-      console.warn(`Skipping file ${filePath} due to error:`, error instanceof Error ? error.message : error);
+      warn(`Skipping file ${filePath} due to error:`, error instanceof Error ? error.message : error);
     }
   }
 

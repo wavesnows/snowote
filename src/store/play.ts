@@ -4,6 +4,7 @@ import ws from 'nodejs-websocket';
 import { ipcRenderer, ipcMain, contextBridge } from 'electron';
 import { exec } from 'child_process';
 import remote from '@electron/remote/main';
+import { log } from '@/libs/logger'
 
 
 
@@ -75,9 +76,9 @@ async function getTTSData(
       SSML = inps.inputValue;
     }
     ipcRenderer.send("log.info", SSML);
-    console.log(SSML);
+    log(SSML);
 
-    console.log("获取Token...");
+    log("获取Token...");
     const Authorization = await getAuthToken();
     const XConnectionId = uuidv4().toUpperCase().replaceAll("-", "");
 
@@ -85,25 +86,25 @@ async function getTTSData(
     // const connect: any = await wssConnect(
     //   `wss://eastus.tts.speech.microsoft.com/cognitiveservices/websocket/v1?Authorization=${Authorization}&X-ConnectionId=${XConnectionId}`
     // );
-    console.log("创建webscoket连接...");
-    console.log("Authorization:", Authorization);
-    console.log("XConnectionId:", XConnectionId);
+    log("创建webscoket连接...");
+    log("Authorization:", Authorization);
+    log("XConnectionId:", XConnectionId);
     const connect: any = await wssConnect(
       `wss://eastus.api.speech.microsoft.com/cognitiveservices/websocket/v1?TrafficType=AzureDemo&Authorization=${Authorization}&X-ConnectionId=${XConnectionId}`
     );
 
     ipcRenderer.send("log.info", "第1次上报...");
-    console.log("第1次上报...");
+    log("第1次上报...");
     const message_1 = `Path: speech.config\r\nX-RequestId: ${XConnectionId}\r\nX-Timestamp: ${getXTime()}\r\nContent-Type: application/json\r\n\r\n{"context":{"system":{"name":"SpeechSDK","version":"1.19.0","build":"JavaScript","lang":"JavaScript","os":{"platform":"Browser/Linux x86_64","name":"Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0","version":"5.0 (X11)"}}}}`;
     await wssSend(connect, message_1);
 
     ipcRenderer.send("log.info", "第2次上报...");
-    console.log("第2次上报...");
+    log("第2次上报...");
     const message_2 = `Path: synthesis.context\r\nX-RequestId: ${XConnectionId}\r\nX-Timestamp: ${getXTime()}\r\nContent-Type: application/json\r\n\r\n{"synthesis":{"audio":{"metadataOptions":{"sentenceBoundaryEnabled":false,"wordBoundaryEnabled":false},"outputFormat":"audio-24khz-160kbitrate-mono-mp3"}}}`;
     await wssSend(connect, message_2);
 
     ipcRenderer.send("log.info", "第3次上报...");
-    console.log("第3次上报...");
+    log("第3次上报...");
     const message_3 = `Path: ssml\r\nX-RequestId: ${XConnectionId}\r\nX-Timestamp: ${getXTime()}\r\nContent-Type: application/ssml+xml\r\n\r\n${SSML}`;
     await wssSend(connect, message_3);
 
@@ -112,7 +113,7 @@ async function getTTSData(
       connect.on("text", (data: string | string[]) => {
         if (data.indexOf("Path:turn.end") >= 0) {
           ipcRenderer.send("log.info", "已完成");
-          console.log("已完成");
+          log("已完成");
           connect.close();
           resolve(final_data);
         }
@@ -123,7 +124,7 @@ async function getTTSData(
           on: (arg0: string, arg1: { (): void; (): void }) => void;
           read: () => any;
         }) {
-          console.log("正在接收数据...");
+          log("正在接收数据...");
           let data = Buffer.alloc(0);
           response.on("readable", function () {
             const newData = response.read();
@@ -143,7 +144,7 @@ async function getTTSData(
       connect.on("close", function (code: any, reason: any) {});
     });
   } catch (error) {
-    console.log(error);
+    log(error);
     return new Promise((resolve, reject) => {
       reject(error);
     });

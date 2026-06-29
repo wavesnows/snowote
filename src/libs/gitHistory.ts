@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { log } from '@/libs/logger'
 
 const simpleGit = require('simple-git');
 
@@ -20,7 +21,7 @@ export async function getFileHistory(
   const git = simpleGit(repoPath);
   const relativePath = path.relative(repoPath, filePath).replace(/\\/g, '/');
 
-  console.log('Getting history for file:', relativePath, 'in repo:', repoPath);
+  log('Getting history for file:', relativePath, 'in repo:', repoPath);
 
   try {
     // Use raw git command to ensure correct behavior
@@ -34,18 +35,18 @@ export async function getFileHistory(
       relativePath
     ];
 
-    console.log('Running git command:', 'git', gitCommand.join(' '));
+    log('Running git command:', 'git', gitCommand.join(' '));
 
     const result = await git.raw(gitCommand);
 
     if (!result || result.trim().length === 0) {
-      console.log('No commits found for file');
+      log('No commits found for file');
       return [];
     }
 
     // Parse the output
     const lines = result.trim().split('\n');
-    console.log('Parsed', lines.length, 'lines from git log');
+    log('Parsed', lines.length, 'lines from git log');
 
     const allCommits: CommitInfo[] = lines.map((line: string) => {
       const [hash, date, author_name, author_email, ...messageParts] = line.split('|');
@@ -65,13 +66,13 @@ export async function getFileHistory(
       try {
         await git.show([`${commit.hash}:${relativePath}`]);
         validCommits.push(commit);
-        console.log('✓ Commit', commit.hash.substring(0, 7), 'contains file:', commit.message);
+        log('✓ Commit', commit.hash.substring(0, 7), 'contains file:', commit.message);
       } catch (error) {
-        console.log('✗ Commit', commit.hash.substring(0, 7), 'does NOT contain file:', commit.message);
+        log('✗ Commit', commit.hash.substring(0, 7), 'does NOT contain file:', commit.message);
       }
     }
 
-    console.log('Returning', validCommits.length, 'valid commits out of', allCommits.length);
+    log('Returning', validCommits.length, 'valid commits out of', allCommits.length);
     return validCommits;
   } catch (error) {
     console.error('Failed to get file history:', error);
@@ -88,11 +89,11 @@ export async function getFileContentAtCommit(
   const git = simpleGit(repoPath);
   const relativePath = path.relative(repoPath, filePath).replace(/\\/g, '/');
 
-  console.log('Getting content for commit:', commitHash.substring(0, 7), 'file:', relativePath);
+  log('Getting content for commit:', commitHash.substring(0, 7), 'file:', relativePath);
 
   try {
     const content = await git.show([`${commitHash}:${relativePath}`]);
-    console.log('✅ Got content, length:', content.length);
+    log('✅ Got content, length:', content.length);
     return content;
   } catch (error: any) {
     console.error('❌ Failed to get file content:', error.message);
@@ -109,11 +110,11 @@ export async function restoreFileToCommit(
   const git = simpleGit(repoPath);
   const relativePath = path.relative(repoPath, filePath).replace(/\\/g, '/');
 
-  console.log('Restoring file:', relativePath, 'to commit:', commitHash);
+  log('Restoring file:', relativePath, 'to commit:', commitHash);
 
   try {
     await git.checkout([commitHash, '--', relativePath]);
-    console.log('File restored successfully');
+    log('File restored successfully');
     return true;
   } catch (error) {
     console.error('Failed to restore file:', error);

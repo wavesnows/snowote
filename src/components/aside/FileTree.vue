@@ -154,7 +154,7 @@
 import fs from 'fs'
 import {join, dirname} from "path"
 import { storeToRefs } from "pinia"
-import {ref, watch, nextTick, getCurrentInstance, onMounted, onUnmounted} from 'vue'
+import {ref, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted} from 'vue'
 import Node from 'element-plus/es/components/tree/src/model/node'
 import {ElTree, ElMessage,ElMessageBox, ElPopconfirm} from 'element-plus'
 import { Search, InfoFilled, Star, StarFilled, Document, Folder, FolderOpened, Delete, Position, RemoveFilled } from "@element-plus/icons-vue"
@@ -173,7 +173,7 @@ const filterText = ref('')
 const treeRef = ref<InstanceType<typeof ElTree>>()
 const dialogFormVisible = ref(false)
 const formLabelWidth = '120px';
-const expandedKeys = ref<string[]>([]);
+const expandedKeys = computed<string[]>(() => ttsStore.treeMenu.expandedKeys || []);
 
 const editingPath = ref('')
 const editingName = ref('')
@@ -324,7 +324,6 @@ function saveExpandedState() {
       traverse(store.root);
     }
 
-    expandedKeys.value = expanded;
     // Also save to store so refreshTreeData can preserve it
     ttsStore.treeMenu.expandedKeys = expanded;
     // Persist to disk immediately
@@ -339,7 +338,6 @@ function onNodeExpand(data: Tree) {
   if (!keys.includes(data.path)) {
     const newKeys = [...keys, data.path]
     ttsStore.treeMenu.expandedKeys = newKeys
-    expandedKeys.value = newKeys   // 同步 ref，防止 Electron 重绘时 el-tree 用旧值重新展开
     ttsStore.persistExpandedKeys()
   }
 }
@@ -347,7 +345,6 @@ function onNodeExpand(data: Tree) {
 function onNodeCollapse(data: Tree) {
   const newKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
   ttsStore.treeMenu.expandedKeys = newKeys
-  expandedKeys.value = newKeys     // 同步 ref，防止 Electron 重绘时 el-tree 用旧值重新展开
   ttsStore.persistExpandedKeys()
 }
 

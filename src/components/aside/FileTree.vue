@@ -351,7 +351,6 @@ watch(() => ttsStore.treeMenu.data, () => {
 
 
 const showItemMenu = () => {
-  console.log("show content")
     show.value = true;
   };
 
@@ -365,7 +364,6 @@ const showItemMenu = () => {
 
 
     const handleDropdownItemClick = () => {
-      console.log('点击下拉菜单项');
       dropdownVisible.value = false;
     };
 
@@ -374,7 +372,6 @@ const showItemMenu = () => {
 const handleCommand = (command: any) => {
     ttsStore.treeMenu.treeData = command.data as Tree;
     ttsStore.treeMenu.node = command.node as Node;
-    console.dir(command.node)
    // ElMessage(`click on item ${command.type}`)
     switch (command.type) {
       case 'file':
@@ -445,7 +442,6 @@ const defaultProps = {
 
 watch(
   () => ttsStore.config.needUpdateTree, (newValue, oldValue) => {
-    console.log("tree value change")
     // do something
     ttsStore.config.needUpdateTree = false;
   }
@@ -494,13 +490,11 @@ const filterNode:any = (value: string, data: Tree,node:Node) => {
 }
 
 function loadHandler(data:any){
-  console.log(data)
 }
 
 const addFolder = () =>{
   //let data:Tree = ttsStore.menu.curentData;
   let data:Tree = ttsStore.treeMenu.treeData;
-  console.log("add folder",data)
   dialogFormVisible.value = false;
   let foldername  = ttsStore.treeMenu.newFolderName;
   let path = join(data.path, foldername)
@@ -526,8 +520,6 @@ const addFolder = () =>{
   }
 
   const append = (data: Tree) => {
-    console.log("add")
-    console.dir(data)
     let label:string = getNoteLabel();
     let path:any = join(data.path,label+'.json')
     const newChild:Tree = {label: label, path: path, isFolder:false, isLeaf: true}
@@ -547,15 +539,10 @@ const addFolder = () =>{
 }
 
 const handleNodeClick = ((itemdata: Tree,node:Node) => {
-    console.log('node data is '+ node + itemdata)
-    console.dir(node)
-    console.dir(itemdata)
-
     ttsStore.treeMenu.node = node;
     ttsStore.treeMenu.treeData = itemdata
     ttsStore.inputs.itemData = itemdata
     focusedNodeKey.value = itemdata.path
-    console.log(itemdata)
    if(!itemdata.isFolder && fs.existsSync(itemdata.path)){
     ttsStore.inputs.notePath = itemdata.path;
     ttsStore.cnote.title = itemdata.label;
@@ -578,7 +565,6 @@ const handleNodeClick = ((itemdata: Tree,node:Node) => {
     data = data.trim().replace('\n','')
     if(data == "")
     {
-      console.log('empty file - loading empty EditorJS data')
       const emptyData = {
         time: Date.now(),
         blocks: [],
@@ -590,7 +576,6 @@ const handleNodeClick = ((itemdata: Tree,node:Node) => {
       try {
         const jsonData = JSON.parse(data);
         ttsStore.editerData = jsonData;
-        console.log('json data :'+ jsonData)
       } catch (e) {
         console.error('Failed to parse note JSON:', e)
       }

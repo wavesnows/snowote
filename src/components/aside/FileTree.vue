@@ -477,8 +477,9 @@ watch(
 
 onMounted(() => {
   cancelEvent()
-  // 启动时从 store 恢复展开状态（100ms 等树渲染完毕）
-  setTimeout(() => restoreExpandedState(), 100)
+  // el-tree 初始化是同步的，一个 nextTick 就够；
+  // v-show 保留 el-tree 内存状态，最小化/切 tab 回来无需重设
+  nextTick(() => restoreExpandedState())
 })
 
 onUnmounted(() => {})

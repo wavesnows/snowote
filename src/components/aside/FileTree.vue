@@ -154,7 +154,7 @@
 import fs from 'fs'
 import {join, dirname} from "path"
 import { storeToRefs } from "pinia"
-import {ref, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted} from 'vue'
+import {ref, watch, nextTick, getCurrentInstance, onMounted, onUnmounted} from 'vue'
 import Node from 'element-plus/es/components/tree/src/model/node'
 import {ElTree, ElMessage,ElMessageBox, ElPopconfirm} from 'element-plus'
 import { Search, InfoFilled, Star, StarFilled, Document, Folder, FolderOpened, Delete, Position, RemoveFilled } from "@element-plus/icons-vue"
@@ -173,7 +173,7 @@ const filterText = ref('')
 const treeRef = ref<InstanceType<typeof ElTree>>()
 const dialogFormVisible = ref(false)
 const formLabelWidth = '120px';
-const expandedKeys = computed<string[]>(() => ttsStore.treeMenu.expandedKeys || []);
+const expandedKeys = ref<string[]>([]);
 
 const editingPath = ref('')
 const editingName = ref('')

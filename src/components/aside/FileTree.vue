@@ -306,66 +306,42 @@ var show = ref(false);
 
 const dropdownVisible = ref(false);
 
-// Save expanded nodes state
-function saveExpandedState() {
-  if (treeRef.value) {
-    const store = treeRef.value.store;
-    const expanded: string[] = [];
+// ── 展开状态管理（3 条规则）────────────────────────────────────────
+// 1. 用户展开/折叠 → 更新 store + 写盘，el-tree 自己处理 UI，不需要反向操作
+// 2. 树变可见 / 数据刷新 → 从 store 恢复展开状态
+// 3. 外部跳转（expandTreeToPath）→ 展开新增的 key
 
-    function traverse(node: any) {
-      if (node.expanded && node.key) {
-        expanded.push(node.key);
-      }
-      if (node.childNodes && node.childNodes.length > 0) {
-        node.childNodes.forEach((child: any) => traverse(child));
-      }
-    }
-
-    if (store && store.root) {
-      traverse(store.root);
-    }
-
-    // 同步内存状态（供 pin 前快照用），磁盘写入由 onNodeExpand/onNodeCollapse 负责
-    ttsStore.treeMenu.expandedKeys = expanded;
-  }
+function restoreExpandedState() {
+  const keys = ttsStore.treeMenu.expandedKeys
+  if (!keys || keys.length === 0) return
+  nextTick(() => {
+    keys.forEach((key: string) => {
+      try {
+        const node = treeRef.value?.getNode(key)
+        if (node) node.expand()
+      } catch (_) {}
+    })
+  })
 }
 
-// Directly add/remove key on expand/collapse — avoids traversal-timing issues
-// that would cause setDefaultExpandedKeys to re-expand a just-collapsed node.
 function onNodeExpand(data: Tree) {
   const keys = ttsStore.treeMenu.expandedKeys || []
   if (!keys.includes(data.path)) {
-    const newKeys = [...keys, data.path]
-    ttsStore.treeMenu.expandedKeys = newKeys
+    ttsStore.treeMenu.expandedKeys = [...keys, data.path]
     ttsStore.persistExpandedKeys()
   }
 }
 
 function onNodeCollapse(data: Tree) {
-  const newKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
-  ttsStore.treeMenu.expandedKeys = newKeys
+  ttsStore.treeMenu.expandedKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
   ttsStore.persistExpandedKeys()
 }
 
-// Restore expanded state after tree data refresh
-watch(
-  () => ttsStore.treeMenu.data,
-  () => {
-    focusedNodeKey.value = null
-    const keys = ttsStore.treeMenu.expandedKeys;
-    if (!keys || keys.length === 0) return;
-    nextTick(() => {
-      if (!treeRef.value) return;
-      keys.forEach((key: string) => {
-        try {
-          const node = treeRef.value?.getNode(key);
-          if (node) node.expand();
-        } catch (_) {}
-      });
-    });
-  },
-  { deep: false }
-)
+// 数据刷新后新节点默认折叠，需要重新恢复
+watch(() => ttsStore.treeMenu.data, () => {
+  focusedNodeKey.value = null
+  restoreExpandedState()
+}, { deep: false })
 
 
 
@@ -409,7 +385,6 @@ const handleCommand = (command: any) => {
         ttsStore.showItemInFolder(command.data.path);
         break;
       case 'pin':
-        saveExpandedState();
         ttsStore.togglePin(command.data.path);
         break;
       case 'star':
@@ -476,8 +451,7 @@ watch(filterText, (val) => {
   treeRef.value!.filter(val)
 })
 
-// Watch for expandedKeys changes from store (e.g., from expandTreeToPath).
-// Only expand NEWLY added keys — never re-expand a just-collapsed node.
+// 外部跳转（expandTreeToPath）新增了 key，展开对应节点
 watch(
   () => ttsStore.treeMenu.expandedKeys,
   (newKeys, oldKeys) => {
@@ -497,29 +471,12 @@ watch(
 )
 
 onMounted(() => {
-  cancelEvent();
-  window.addEventListener('save-tree-expanded-state', saveExpandedState);
-
-  // Restore expanded state from last session
-  const keys = ttsStore.treeMenu.expandedKeys;
-  if (keys && keys.length > 0) {
-    nextTick(() => {
-      setTimeout(() => {
-        if (!treeRef.value) return;
-        keys.forEach((key: string) => {
-          try {
-            const node = treeRef.value?.getNode(key);
-            if (node) node.expand();
-          } catch (_) {}
-        });
-      }, 100);
-    });
-  }
+  cancelEvent()
+  // 启动时从 store 恢复展开状态（100ms 等树渲染完毕）
+  setTimeout(() => restoreExpandedState(), 100)
 })
 
-onUnmounted(() => {
-  window.removeEventListener('save-tree-expanded-state', saveExpandedState);
-})
+onUnmounted(() => {})
 
 function cancelEvent(){
 

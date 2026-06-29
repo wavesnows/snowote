@@ -160,6 +160,7 @@ import {ElTree, ElMessage,ElMessageBox, ElPopconfirm} from 'element-plus'
 import { Search, InfoFilled, Star, StarFilled, Document, Folder, FolderOpened, Delete, Position, RemoveFilled } from "@element-plus/icons-vue"
 import {getNoteLabel} from "@/libs/noteUtil"
 import { useTtsStore, editorInstance, Tree } from "@/store/store"
+import { log, dir } from "@/libs/logger"
 import { readDir,readNotes} from "@/libs/fileHandler"
 import {updateTreeMenu} from "@/libs/treeMenu"
 import {remove, removeFolder, renameFile} from "@/libs/fileHandler"
@@ -370,9 +371,9 @@ const showItemMenu = () => {
 
 
 const handleCommand = (command: any) => {
+    log('[FileTree] command:', command.type, command.data?.path)
     ttsStore.treeMenu.treeData = command.data as Tree;
     ttsStore.treeMenu.node = command.node as Node;
-   // ElMessage(`click on item ${command.type}`)
     switch (command.type) {
       case 'file':
         append(command.data)
@@ -539,6 +540,8 @@ const addFolder = () =>{
 }
 
 const handleNodeClick = ((itemdata: Tree,node:Node) => {
+    log('[FileTree] node click:', itemdata.path)
+    dir(itemdata)
     ttsStore.treeMenu.node = node;
     ttsStore.treeMenu.treeData = itemdata
     ttsStore.inputs.itemData = itemdata

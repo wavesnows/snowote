@@ -182,7 +182,8 @@ const renameInputRef = ref<HTMLInputElement | null>(null)
 const focusedNodeKey = ref<string | null>(null)
 
 function getVisibleNodes(): Tree[] {
-  saveExpandedState()
+  // onNodeExpand/onNodeCollapse 已精确维护 ttsStore.treeMenu.expandedKeys，
+  // 无需在每次键盘导航时全量遍历树并写磁盘
   const result: Tree[] = []
   const expandedSet = new Set(ttsStore.treeMenu.expandedKeys || [])
   const filter = filterText.value.trim()
@@ -324,10 +325,8 @@ function saveExpandedState() {
       traverse(store.root);
     }
 
-    // Also save to store so refreshTreeData can preserve it
+    // 同步内存状态（供 pin 前快照用），磁盘写入由 onNodeExpand/onNodeCollapse 负责
     ttsStore.treeMenu.expandedKeys = expanded;
-    // Persist to disk immediately
-    ttsStore.persistExpandedKeys();
   }
 }
 

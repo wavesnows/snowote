@@ -337,13 +337,17 @@ function saveExpandedState() {
 function onNodeExpand(data: Tree) {
   const keys = ttsStore.treeMenu.expandedKeys || []
   if (!keys.includes(data.path)) {
-    ttsStore.treeMenu.expandedKeys = [...keys, data.path]
+    const newKeys = [...keys, data.path]
+    ttsStore.treeMenu.expandedKeys = newKeys
+    expandedKeys.value = newKeys   // 同步 ref，防止 Electron 重绘时 el-tree 用旧值重新展开
     ttsStore.persistExpandedKeys()
   }
 }
 
 function onNodeCollapse(data: Tree) {
-  ttsStore.treeMenu.expandedKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
+  const newKeys = (ttsStore.treeMenu.expandedKeys || []).filter(k => k !== data.path)
+  ttsStore.treeMenu.expandedKeys = newKeys
+  expandedKeys.value = newKeys     // 同步 ref，防止 Electron 重绘时 el-tree 用旧值重新展开
   ttsStore.persistExpandedKeys()
 }
 

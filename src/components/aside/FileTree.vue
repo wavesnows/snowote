@@ -449,8 +449,11 @@ watch(
 )
 
 
+// 防抖过滤：每次按键立即触发 el-tree.filter 会遍历全树重渲染，体感卡顿
+let _filterTimer: ReturnType<typeof setTimeout> | null = null
 watch(filterText, (val) => {
-  treeRef.value!.filter(val)
+  if (_filterTimer) clearTimeout(_filterTimer)
+  _filterTimer = setTimeout(() => treeRef.value?.filter(val), 300)
 })
 
 // 外部跳转（expandTreeToPath）新增了 key，展开对应节点

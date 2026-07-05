@@ -2,6 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { warn } from '@/libs/logger'
 
+/** 转义正则特殊字符，防止用户输入 + . * ( 等导致 SyntaxError */
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 export interface SearchResult {
   filePath: string;
   fileName: string;
@@ -111,7 +116,7 @@ function calculateScore(text: string, query: string, fileName: string): number {
   }
 
   // Count occurrences in content
-  const matches = (lowerText.match(new RegExp(lowerQuery, 'g')) || []).length;
+  const matches = (lowerText.match(new RegExp(escapeRegex(lowerQuery), 'g')) || []).length;
   score += matches * 10;
 
   // Bonus for match at start of text
@@ -296,6 +301,6 @@ export async function searchNotes(notebookPath: string, query: string, limit: nu
 export function highlightMatches(text: string, query: string): string {
   if (!query) return text;
 
-  const regex = new RegExp(`(${query})`, 'gi');
+  const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
   return text.replace(regex, '<mark>$1</mark>');
 }

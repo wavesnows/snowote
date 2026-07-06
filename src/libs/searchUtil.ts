@@ -269,6 +269,8 @@ export class SearchSession {
 
     const batch: SearchResult[] = [];
     for (let i = 0; i < PAGE_SIZE; i++) {
+      // 每次 await 后 stop() 可能已被调用，re-check 避免 null.next()
+      if (!this.gen || this._done) break;
       const { value, done } = await this.gen.next();
       if (done) { this._done = true; break; }
       if (value) batch.push(value);

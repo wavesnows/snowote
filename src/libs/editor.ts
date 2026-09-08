@@ -65,7 +65,7 @@ export function initEditor(holder: HTMLElement){
             shortcut: 'CMD+SHIFT+K'
           },
         },
-        data:store.get("editerData"),
+        data:useTtsStore().editerData,
         placeholder: 'Let`s write an awesome story!',
         onChange: (api, event) => {
          log('Now I know that Editor\'s content changed!', api, event)
@@ -92,7 +92,7 @@ export function readyInit(){
 };
 
 export function loadContent(){
-  let url: string = store.get("lastPath") as string;
+  let url: string = useTtsStore().cnote.lastPath;
   if (url && url.includes(store.get('currentNotebookPath'))) {
     try {
       const data = fs.readFileSync(url, 'utf8');

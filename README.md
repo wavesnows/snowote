@@ -4,6 +4,9 @@ A lightweight, local-first note-taking app built with Electron and Vue 3. Write 
 
 [官网](https://snowote.wavesnows.com) · [Download](../../releases) · [Guide](docs/guide.md) · [中文说明](README_CN.md)
 
+
+**v1.0.2 (2026-10-20)** — Incremental directory refresh improves large-notebook menu responsiveness and preserves selection and expansion. [Release](https://github.com/wavesnows/snowote/releases/tag/v1.0.2)
+
 ---
 
 ![snowote](docs/Screenshot.png)

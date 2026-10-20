@@ -4,6 +4,9 @@
 
 [官网](https://snowote.wavesnows.com) · [下载](../../releases) · [使用说明](docs/guide.md) · [English](README.md)
 
+
+**v1.0.2 (2026-10-20)** — 目录增量刷新，改善大笔记本菜单响应并保留展开与选中状态。 [Release](https://github.com/wavesnows/snowote/releases/tag/v1.0.2)
+
 ---
 
 ![雪记](docs/Screenshot.png)
